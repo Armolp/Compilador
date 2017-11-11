@@ -261,4 +261,28 @@ def readFile(file):
     parser.parse(data)
 
 
-readFile("codigoPrueba.txt")
+import dirFunc as DF
+
+#list of functions that holds Func objects
+functions = []
+# list of cuad commands
+cuads = []
+# current scope start in global scope
+scope = 0
+
+# Initialize the function list with the default functions
+functions.append(DF.Func("global", -1))
+functions.append(DF.Func("init", -1))
+functions.append(DF.Func("loop", -1))
+
+# functions[0].varTable.append(DF.Var("i", "int", -1))
+# functions[0].varTable.append(DF.Var("j", "int", -1))
+# functions[0].varTable.append(DF.Var("k", "int", -1))
+
+readFile("testing\codigoPrueba.txt")
+
+# print function
+for i in range(0,len(functions)):
+    print(functions[i].id)
+    for j in range(0, len(functions[i].varTable)):
+        print("\t" + functions[i].varTable[j].id)
