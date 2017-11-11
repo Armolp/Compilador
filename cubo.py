@@ -4,38 +4,63 @@
 # cubo semantico
 #----------------------------------------------
 
+from enum import Enum
+class Type(Enum):
+     INT = 1
+     FLOAT = 2
+     STRING = 3
+     BOOL = 4
+     ARRAY = 5
+     ERROR = -1
+
+class Operation(Enum):
+     PLUS = 1
+     MINUS = 2
+     MULTIPLY = 3
+     DIVIDE = 4
+     GREATER = 5
+     GREATEREQUAL = 6
+     LESS = 7
+     LESSEQUAL = 8
+     ASIGN = 9
+     EQUAL = 10
+     NOTEQUAL = 11
+     AND = 12
+     OR = 13
+
+
 cuboSemantico = {
-# int operacion tipo
-    "int": {
+# int operacion tipo 
+    Type.INT: {
     #int operacion int
-      "int": {
-        "+":"int",
-        "-":"int",
-        "*":"int",
-        "/":"int",
-        ">":"bool",
-        ">=":"bool",
-        "<=":"bool",
-        "<":"bool",
-        "=":"int",
-        "==": "bool",
-        "!=":"bool",
+      Type.INT: {
+        "+":Type.INT,
+        "-":Type.INT,
+        "*":Type.INT,
+        "/":Type.INT,
+        ">":Type.BOOL,
+        ">=":Type.BOOL,
+        "<=":Type.BOOL,
+        "<":Type.BOOL,
+        "=":Type.INT,
+        "==": Type.BOOL,
+        "!=":Type.BOOL,
         "and":"Error",
         "or":"Error",
         },
     #int operacion float
-      "float": {
-        "+":"float",
-        "-":"float",
-        "*":"float",
-        "/":"float",
-        ">":"bool",
-        ">=":"bool",
-        "<=":"bool",
-        "<":"bool",
-        "=":"int",
-        "==": "bool",
-        "!=":"bool",
+      Type.FLOAT: {
+        "+":Type.FLOAT,
+        "-":Type.FLOAT,
+        "*":Type.FLOAT,
+        "/":Type.FLOAT,
+        ">":Type.BOOL,
+        ">=":Type.BOOL,
+        "<=":Type.BOOL,
+        "<":Type.BOOL,
+        "=":Type.INT,
+        "==": Type.BOOL,
+        "!=":Type.BOOL,
         "and":"Error",
         "or":"Error",
         },
@@ -56,7 +81,7 @@ cuboSemantico = {
         "or":"Error",
         },
     #int operacion bool
-      "bool": {
+      Type.BOOL: {
         "+":"Error",
         "-":"Error",
         "*":"Error",
@@ -89,36 +114,36 @@ cuboSemantico = {
         },
       },
 #float operacion tipo
-    "float":{
+    Type.FLOAT:{
     #float operacion int
-      "int": {
-        "+":"float",
-        "-":"float",
-        "*":"float",
-        "/":"float",
-        ">":"bool",
-        ">=":"bool",
-        "<=":"bool",
-        "<":"bool",
-        "=":"float",
-        "==": "bool",
-        "!=":"bool",
+      Type.INT: {
+        "+":Type.FLOAT,
+        "-":Type.FLOAT,
+        "*":Type.FLOAT,
+        "/":Type.FLOAT,
+        ">":Type.BOOL,
+        ">=":Type.BOOL,
+        "<=":Type.BOOL,
+        "<":Type.BOOL,
+        "=":Type.FLOAT,
+        "==": Type.BOOL,
+        "!=":Type.BOOL,
         "and":"Error",
         "or":"Error",
         },
     #float operacion float
-      "float": {
-        "+":"float",
-        "-":"float",
-        "*":"float",
-        "/":"float",
-        ">":"bool",
-        ">=":"bool",
-        "<=":"bool",
-        "<":"bool",
-        "=":"float",
-        "==": "bool",
-        "!=":"bool",
+      Type.FLOAT: {
+        "+":Type.FLOAT,
+        "-":Type.FLOAT,
+        "*":Type.FLOAT,
+        "/":Type.FLOAT,
+        ">":Type.BOOL,
+        ">=":Type.BOOL,
+        "<=":Type.BOOL,
+        "<":Type.BOOL,
+        "=":Type.FLOAT,
+        "==": Type.BOOL,
+        "!=":Type.BOOL,
         "and":"Error",
         "or":"Error",
         },
@@ -139,7 +164,7 @@ cuboSemantico = {
         "or":"Error",
         },
     #float operacion bool
-      "bool": {
+      Type.BOOL: {
         "+":"Error",
         "-":"Error",
         "*":"Error",
@@ -174,7 +199,7 @@ cuboSemantico = {
 #string operacion tipo
     "string":{
     #string operacion int
-      "int": {
+      Type.INT: {
         "+":"Error",
         "-":"Error",
         "*":"Error",
@@ -190,7 +215,7 @@ cuboSemantico = {
         "or":"Error",
         },
     #string operacion float
-      "float": {
+      Type.FLOAT: {
         "+":"Error",
         "-":"Error",
         "*":"Error",
@@ -216,13 +241,13 @@ cuboSemantico = {
         "<=":"Error",
         "<":"Error",
         "=":"string",
-        "==": "bool",
-        "!=":"bool",
+        "==": Type.BOOL,
+        "!=":Type.BOOL,
         "and":"Error",
         "or":"Error",
         },
     #string operacion string
-      "bool": {
+      Type.BOOL: {
         "+":"Error",
         "-":"Error",
         "*":"Error",
@@ -255,9 +280,9 @@ cuboSemantico = {
         },
       },
 #bool operacion tipo
-    "bool":{
+    Type.BOOL:{
     #bool operacion int
-      "int": {
+      Type.INT: {
         "+":"Error",
         "-":"Error",
         "*":"Error",
@@ -273,7 +298,7 @@ cuboSemantico = {
         "or":"Error",
         },
     #bool operacion float
-      "float": {
+      Type.FLOAT: {
         "+":"Error",
         "-":"Error",
         "*":"Error",
@@ -305,7 +330,7 @@ cuboSemantico = {
         "or":"Error",
         },
     #bool operacion bool
-      "bool": {
+      Type.BOOL: {
         "+":"Error",
         "-":"Error",
         "*":"Error",
@@ -314,11 +339,11 @@ cuboSemantico = {
         ">=":"Error",
         "<=":"Error",
         "<":"Error",
-        "=":"bool",
-        "==":"bool",
-        "!=":"bool",
-        "and":"bool",
-        "or":"bool",
+        "=":Type.BOOL,
+        "==":Type.BOOL,
+        "!=":Type.BOOL,
+        "and":Type.BOOL,
+        "or":Type.BOOL,
         },
     #bool operacion array
       "array": {
@@ -340,7 +365,7 @@ cuboSemantico = {
 #array operacion tipo
     "array":{
     #array operacion int
-      "int": {
+      Type.INT: {
         "+":"Error",
         "-":"Error",
         "*":"Error",
@@ -356,7 +381,7 @@ cuboSemantico = {
         "or":"Error",
         },
     #array operacion float
-      "float": {
+      Type.FLOAT: {
         "+":"Error",
         "-":"Error",
         "*":"Error",
@@ -388,7 +413,7 @@ cuboSemantico = {
         "or":"Error",
         },
     #array operacion bool
-      "bool": {
+      Type.BOOL: {
         "+":"Error",
         "-":"Error",
         "*":"Error",
