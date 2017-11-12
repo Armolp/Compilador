@@ -1,5 +1,7 @@
 import ply.lex as lex
 import ply.yacc as yacc
+from dirFunc import *
+from cuadruplo import *
 
 tokens = [
     'LPAR','RPAR','LBRACE','RBRACE','LBRACKET','RBRACKET',
@@ -224,34 +226,89 @@ def p_opbool(p):
             | NEQT"""
 
 def p_exp(p):
-    "exp : term exp1"
+    "exp : term popExp exp1"
+
+def p_popExp(p):
+    "popExp :"
+    global tempNum
+    oper = ["+","-"]
+    if len(operators) > 0:
+        if  operators[-1] in oper:
+            act = operators.pop()
+            arg2 = operands.pop()
+            arg1 = operands.pop()
+            res = "t" + str(tempNum)
+            cuads.append(cuadruplo(len(cuads),act,arg1, arg2, res))
+            operands.append(res)
+            tempNum += 1
+            print operators
+            print operands
+
 def p_exp1(p):
     """exp1 : opexp exp
             | empty"""
 def p_opexp(p):
     """opexp : SUB
             | SUM"""
+    operators.append(p[1])
+    print operators
 
 def p_term(p):
-    "term : factor term1"
+    "term : factor popFactor term1"
 def p_term1(p):
     """term1 : opterm term
             | empty"""
+
+def p_popFactor(p):
+    "popFactor :"
+    global tempNum
+    oper = ["*","/","%"]
+    if len(operators) > 0:
+        if  operators[-1] in oper:
+            act = operators.pop()
+            arg2 = operands.pop()
+            arg1 = operands.pop()
+            res = "t" + str(tempNum)
+            cuads.append(cuadruplo(len(cuads),act,arg1, arg2, res))
+            operands.append(res)
+            tempNum += 1
+            print operators
+            print operands
+
 def p_opterm(p):
     """opterm : MULT
             | DIV
             | MOD"""
+    operators.append(p[1])
+    print operators
 
 def p_factor(p):
     "factor : opfactor fact1"
+
 def p_fact1(p):
-    """fact1 : ID
-            | INT
-            | FLOAT
-            | BOOL
-            | CHAR
-            | LPAR expresion RPAR
+    """fact1 : ID pushConst
+            | INT pushConst
+            | FLOAT pushConst
+            | BOOL pushConst
+            | CHAR pushConst
+            | LPAR pushPar expresion RPAR popPar
             | invocacion"""
+
+def p_pushConst(p):
+    "pushConst :"
+    operands.append(p[-1])
+    print operands
+
+def p_pushPar(p):
+    "pushPar :"
+    operators.append(p[-1])
+    print operators
+
+def p_popPar(p):
+    "popPar :"
+    operators.pop()
+    print operators
+
 def p_opfactor(p):
     """opfactor : SUM
             | SUB
@@ -260,6 +317,8 @@ def p_opfactor(p):
 def p_empty(p):
     'empty :'
     pass
+
+#
 
 #Es llamado cuando sucede un error en el parser
 def p_error(p):
@@ -275,14 +334,21 @@ def readFile(file):
     parser.parse(data)
 
 
-from dirFunc import *
+
 
 #list of functions that holds Func objects
 functions = []
 # list of cuad commands
 cuads = []
+# temporal directions counter
+tempNum = 1
 # current scope start in global scope
 scope = 0
+# stacks
+jumps = []
+operators = []
+operands = []
+types = []
 
 # Initialize the function list with the default functions
 functions.append(Func("global", "void", -1))
@@ -294,7 +360,10 @@ functions.append(Func("global", "void", -1))
 readFile("testing\codigoPrueba.txt")
 
 # print function
-for i in range(0,len(functions)):
-    print(functions[i].id)
-    for j in range(0, len(functions[i].varTable)):
-        print("\t" + functions[i].varTable[j].id)
+# for i in range(0,len(functions)):
+#     print(functions[i].id)
+#     for j in range(0, len(functions[i].varTable)):
+#         print("\t" + functions[i].varTable[j].id)
+
+for i in range(0, len(cuads)):
+    print str(cuads[i])
