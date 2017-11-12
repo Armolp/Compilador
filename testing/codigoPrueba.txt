@@ -12,6 +12,8 @@ int g(){
 	int y;
 }
 
+int h;
+
 init (0,0){
 	bool b;
 }

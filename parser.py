@@ -111,15 +111,15 @@ def p_addFunc(p):
         functions.append(Func(p[-1], "void", -1))
     else:
         functions.append(Func(p[-1], p[-2], -1))
+    global scope
     scope = len(functions) -1
-    print "sucede", scope
 
 def p_loop(p):
     "loop : LOOP addFunc bloque"
 
 def p_variable(p):
     "variable : tipo var SEMI"
-    print p[2], scope
+    functions[scope].varTable.append(Var(p[2], p[1], -1))
 def p_var(p):
     "var : ID arr var1 var2"
     p[0] = p[1]
@@ -137,6 +137,8 @@ def p_arr(p):
 
 def p_funcion(p):
     "funcion : tipo ID addFunc LPAR func1 RPAR bloque"
+    global scope
+    scope = 0
 def p_func1(p):
     """func1 : func2
             | empty"""
@@ -156,7 +158,7 @@ def p_tipo(p):
 
 def p_parametro(p):
     "parametro : tipo ID arr"
-
+    functions[scope].varTable.append(Var(p[2], p[1], -1))
 def p_bloque(p):
     "bloque : LBRACE bloq1 RBRACE"
 def p_bloq1(p):
@@ -296,5 +298,3 @@ for i in range(0,len(functions)):
     print(functions[i].id)
     for j in range(0, len(functions[i].varTable)):
         print("\t" + functions[i].varTable[j].id)
-
-print scope
