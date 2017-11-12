@@ -74,7 +74,7 @@ def t_ID(t):
       t.type = reserved[t.value]
       return t
     t.value = str(t.value)
-    print(t)
+    #print(t)
     return t
 
 def t_newline(t):
@@ -103,15 +103,26 @@ def p_prog(p):
 
 def p_init(p):
     #init(INT,INT)
-    "init : INIT LPAR INT COMA INT RPAR bloque"
+    "init : INIT addFunc LPAR INT COMA INT RPAR bloque"
+
+def p_addFunc(p):
+    "addFunc : empty"
+    if p[-2] == None:
+        functions.append(Func(p[-1], "void", -1))
+    else:
+        functions.append(Func(p[-1], p[-2], -1))
+    scope = len(functions) -1
+    print "sucede", scope
 
 def p_loop(p):
-    "loop : LOOP bloque"
+    "loop : LOOP addFunc bloque"
 
 def p_variable(p):
     "variable : tipo var SEMI"
+    print p[2], scope
 def p_var(p):
     "var : ID arr var1 var2"
+    p[0] = p[1]
 def p_var1(p):
     """var1 : EQ expresion
             | empty"""
@@ -125,7 +136,7 @@ def p_arr(p):
             | empty"""
 
 def p_funcion(p):
-    "funcion : tipo ID LPAR func1 RPAR bloque"
+    "funcion : tipo ID addFunc LPAR func1 RPAR bloque"
 def p_func1(p):
     """func1 : func2
             | empty"""
@@ -141,6 +152,7 @@ def p_tipo(p):
             | TYPEFLOAT
             | TYPEBOOL
             | TYPECHAR"""
+    p[0] = p[1]
 
 def p_parametro(p):
     "parametro : tipo ID arr"
@@ -261,7 +273,7 @@ def readFile(file):
     parser.parse(data)
 
 
-import dirFunc as DF
+from dirFunc import *
 
 #list of functions that holds Func objects
 functions = []
@@ -271,13 +283,11 @@ cuads = []
 scope = 0
 
 # Initialize the function list with the default functions
-functions.append(DF.Func("global", -1))
-functions.append(DF.Func("init", -1))
-functions.append(DF.Func("loop", -1))
+functions.append(Func("global", "void", -1))
 
-# functions[0].varTable.append(DF.Var("i", "int", -1))
-# functions[0].varTable.append(DF.Var("j", "int", -1))
-# functions[0].varTable.append(DF.Var("k", "int", -1))
+# functions[0].varTable.append(Var("i", "int", -1))
+# functions[0].varTable.append(Var("j", "int", -1))
+# functions[0].varTable.append(Var("k", "int", -1))
 
 readFile("testing\codigoPrueba.txt")
 
@@ -286,3 +296,5 @@ for i in range(0,len(functions)):
     print(functions[i].id)
     for j in range(0, len(functions[i].varTable)):
         print("\t" + functions[i].varTable[j].id)
+
+print scope

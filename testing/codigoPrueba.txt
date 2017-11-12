@@ -1,13 +1,21 @@
-int prueba[ = 0 + (-1 - 2 * 3)/4 % 5;
+int prueba = 0 + (-1 - 2 * 3)/4 % 5;
 
-void func1( int i , char c ) {
+char func1( int i , char c ) {
 	i = n * prueba;
 }
 
-init(0 , 0){
+float fib(){
+	int x;
+}
 
+int g(){
+	int y;
+}
+
+init (0,0){
+	bool b;
 }
 
 loop {
-
+	char c;
 }

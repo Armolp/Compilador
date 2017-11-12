@@ -4,7 +4,7 @@ class DirFunc:
 
 
 class Func:
-    def __init__(self, id, dir):
+    def __init__(self, id, type, dir):
         self.id = id
         self.dir = dir
         self.varTable = []
