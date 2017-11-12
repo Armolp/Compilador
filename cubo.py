@@ -8,7 +8,7 @@ from enum import Enum
 class Type(Enum):
      INT = 1
      FLOAT = 2
-     STRING = 3
+     CHAR = 3
      BOOL = 4
      ARRAY = 5
      ERROR = -1
@@ -64,8 +64,8 @@ cubo = {
         Operation.AND:Type.ERROR,
         Operation.OR:Type.ERROR,
         },
-    #int operacion string
-      Type.STRING: {
+    #int operacion CHAR
+      Type.CHAR: {
         Operation.PLUS:Type.ERROR,
         Operation.MINUS:Type.ERROR,
         Operation.MULTIPLY:Type.ERROR,
@@ -147,8 +147,8 @@ cubo = {
         Operation.AND:Type.ERROR,
         Operation.OR:Type.ERROR,
         },
-    #float operacion string
-      Type.STRING: {
+    #float operacion CHAR
+      Type.CHAR: {
         Operation.PLUS:Type.ERROR,
         Operation.MINUS:Type.ERROR,
         Operation.MULTIPLY:Type.ERROR,
@@ -196,9 +196,9 @@ cubo = {
         Operation.OR:Type.ERROR,
         },
       },
-#string operacion tipo
-    Type.STRING:{
-    #string operacion int
+#CHAR operacion tipo
+    Type.CHAR:{
+    #CHAR operacion int
       Type.INT: {
         Operation.PLUS:Type.ERROR,
         Operation.MINUS:Type.ERROR,
@@ -214,7 +214,7 @@ cubo = {
         Operation.AND:Type.ERROR,
         Operation.OR:Type.ERROR,
         },
-    #string operacion float
+    #CHAR operacion float
       Type.FLOAT: {
         Operation.PLUS:Type.ERROR,
         Operation.MINUS:Type.ERROR,
@@ -230,9 +230,9 @@ cubo = {
         Operation.AND:Type.ERROR,
         Operation.OR:Type.ERROR,
         },
-    #string operacion string
-      Type.STRING: {
-        Operation.PLUS:Type.STRING,
+    #CHAR operacion CHAR
+      Type.CHAR: {
+        Operation.PLUS:Type.CHAR,
         Operation.MINUS:Type.ERROR,
         Operation.MULTIPLY:Type.ERROR,
         Operation.DIVIDE:Type.ERROR,
@@ -240,13 +240,13 @@ cubo = {
         Operation.GREATEREQUAL:Type.ERROR,
         Operation.LESSEQUAL:Type.ERROR,
         Operation.LESS:Type.ERROR,
-        Operation.ASIGN:Type.STRING,
+        Operation.ASIGN:Type.CHAR,
         Operation.EQUAL: Type.BOOL,
         Operation.NOTEQUAL:Type.BOOL,
         Operation.AND:Type.ERROR,
         Operation.OR:Type.ERROR,
         },
-    #string operacion string
+    #CHAR operacion CHAR
       Type.BOOL: {
         Operation.PLUS:Type.ERROR,
         Operation.MINUS:Type.ERROR,
@@ -262,7 +262,7 @@ cubo = {
         Operation.AND:Type.ERROR,
         Operation.OR:Type.ERROR,
         },
-    #string operacion array
+    #CHAR operacion array
       Type.ARRAY: {
         Operation.PLUS:Type.ERROR,
         Operation.MINUS:Type.ERROR,
@@ -313,8 +313,8 @@ cubo = {
         Operation.AND:Type.ERROR,
         Operation.OR:Type.ERROR,
         },
-    #bool operacion string
-      Type.STRING: {
+    #bool operacion CHAR
+      Type.CHAR: {
         Operation.PLUS:Type.ERROR,
         Operation.MINUS:Type.ERROR,
         Operation.MULTIPLY:Type.ERROR,
@@ -396,8 +396,8 @@ cubo = {
         Operation.AND:Type.ERROR,
         Operation.OR:Type.ERROR,
         },
-    #array operacion string
-      Type.STRING: {
+    #array operacion CHAR
+      Type.CHAR: {
         Operation.PLUS:Type.ERROR,
         Operation.MINUS:Type.ERROR,
         Operation.MULTIPLY:Type.ERROR,
