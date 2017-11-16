@@ -1,19 +1,16 @@
 int x;
 int prueba;
 
-char func1( int i , char c ) {
-	i = x + prueba * (-10 / 12);
+int func1( int i , char c ) {
+	int a,b,c,d,e,f;
+	a = i < 3;
+	if(f || a || (c && d)){
+		i = 20;
+	}
+	else {
+		i = 0;
+	}
 }
-
-float fib(){
-	int x;
-}
-
-int g(){
-	int y;
-}
-
-int h;
 
 init (0,0){
 	bool b;

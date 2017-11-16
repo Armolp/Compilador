@@ -3,6 +3,8 @@ import ply.yacc as yacc
 from dirFunc import *
 from cuadruplo import *
 
+StackDebuging = True
+
 tokens = [
     'LPAR','RPAR','LBRACE','RBRACE','LBRACKET','RBRACKET',
     'NOT','AND','OR',
@@ -44,7 +46,7 @@ t_OR = r'\|\|'
 
 t_LT = r'<'     #Less Than
 t_LET = r'<='   #Less or Equal Than
-t_GT = r'>'     #Greater Than
+t_GT = r'\>'     #Greater Than
 t_GET = r'>='   #Greater or Equal Than
 t_EQT = r'=='   #EQual To
 t_NEQT = r'!='  #Not EQual To
@@ -181,13 +183,18 @@ def p_asignacion(p):
 
 def p_eqQuad(p):
     "eqQuad :"
+    if StackDebuging:
+        print operators
+        print operands
+
     global tempNum
     act = "="
     arg1 = operands.pop()
-    res = p[-3]
+    res = p[-5]
     cuads.append(cuadruplo(len(cuads), act, arg1, None, res))
     operands.append(res)
     tempNum += 1
+
 
 def p_condicion(p):
     "condicion : IF LPAR expresion RPAR bloque cond1"
@@ -227,7 +234,7 @@ def p_opbin(p):
 def p_expbool(p):
     "expbool : exp expbool1"
 def p_expbool1(p):
-    """expbool1 : opbool exp
+    """expbool1 : opbool exp popBoolExp
             | empty"""
 def p_opbool(p):
     """opbool : LT
@@ -236,6 +243,26 @@ def p_opbool(p):
             | GET
             | EQT
             | NEQT"""
+    operators.append(p[1])
+
+def p_popBoolExp(p):
+    "popBoolExp :"
+    global tempNum
+    oper = ["<","<=",">",">=","==","!="]
+    if len(operators) > 0:
+        if  operators[-1] in oper:
+            if StackDebuging:
+                print operators
+                print operands
+
+            act = operators.pop()
+            arg2 = operands.pop()
+            arg1 = operands.pop()
+            res = "t" + str(tempNum)
+            cuads.append(cuadruplo(len(cuads),act,arg1, arg2, res))
+            operands.append(res)
+            tempNum += 1
+
 
 def p_exp(p):
     "exp : term popExp exp1"
@@ -246,6 +273,10 @@ def p_popExp(p):
     oper = ["+","-"]
     if len(operators) > 0:
         if  operators[-1] in oper:
+            if StackDebuging:
+                print operators
+                print operands
+
             act = operators.pop()
             arg2 = operands.pop()
             arg1 = operands.pop()
@@ -253,8 +284,7 @@ def p_popExp(p):
             cuads.append(cuadruplo(len(cuads),act,arg1, arg2, res))
             operands.append(res)
             tempNum += 1
-            #print operators
-            #print operands
+
 
 def p_exp1(p):
     """exp1 : opexp exp
@@ -277,6 +307,10 @@ def p_popFactor(p):
     oper = ["*","/","%"]
     if len(operators) > 0:
         if  operators[-1] in oper:
+            if StackDebuging:
+                print operators
+                print operands
+
             act = operators.pop()
             arg2 = operands.pop()
             arg1 = operands.pop()
@@ -284,8 +318,6 @@ def p_popFactor(p):
             cuads.append(cuadruplo(len(cuads),act,arg1, arg2, res))
             operands.append(res)
             tempNum += 1
-            #print operators
-            #print operands
 
 def p_opterm(p):
     """opterm : MULT
