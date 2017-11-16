@@ -119,15 +119,17 @@ def p_addFunc(p):
 def p_loop(p):
     "loop : LOOP addFunc bloque"
 
+# variable - int x = 0;
 def p_variable(p):
     "variable : tipo var SEMI"
     functions[scope].varTable.append(Var(p[2], p[1], -1))
 def p_var(p):
-    "var : ID arr var1 var2"
+    "var : ID arr var2"
     p[0] = p[1]
-def p_var1(p):
-    """var1 : EQ expresion
-            | empty"""
+# def p_var1(p):
+#     """var1 : EQ expresion eqQuad
+#             | empty"""
+
 def p_var2(p):
     """var2 : COMA var
             | empty"""
@@ -175,7 +177,17 @@ def p_estatuto(p):
             | ciclo"""
 
 def p_asignacion(p):
-    "asignacion : ID arr EQ expresion SEMI"
+    "asignacion : ID arr EQ expresion SEMI eqQuad"
+
+def p_eqQuad(p):
+    "eqQuad :"
+    global tempNum
+    act = "="
+    arg1 = operands.pop()
+    res = p[-3]
+    cuads.append(cuadruplo(len(cuads), act, arg1, None, res))
+    operands.append(res)
+    tempNum += 1
 
 def p_condicion(p):
     "condicion : IF LPAR expresion RPAR bloque cond1"
@@ -241,8 +253,8 @@ def p_popExp(p):
             cuads.append(cuadruplo(len(cuads),act,arg1, arg2, res))
             operands.append(res)
             tempNum += 1
-            print operators
-            print operands
+            #print operators
+            #print operands
 
 def p_exp1(p):
     """exp1 : opexp exp
@@ -251,7 +263,7 @@ def p_opexp(p):
     """opexp : SUB
             | SUM"""
     operators.append(p[1])
-    print operators
+    #print operators
 
 def p_term(p):
     "term : factor popFactor term1"
@@ -272,15 +284,15 @@ def p_popFactor(p):
             cuads.append(cuadruplo(len(cuads),act,arg1, arg2, res))
             operands.append(res)
             tempNum += 1
-            print operators
-            print operands
+            #print operators
+            #print operands
 
 def p_opterm(p):
     """opterm : MULT
             | DIV
             | MOD"""
     operators.append(p[1])
-    print operators
+    #print operators
 
 def p_factor(p):
     "factor : opfactor fact1"
@@ -297,22 +309,26 @@ def p_fact1(p):
 def p_pushConst(p):
     "pushConst :"
     operands.append(p[-1])
-    print operands
+    #print operands
 
 def p_pushPar(p):
     "pushPar :"
     operators.append(p[-1])
-    print operators
+    #print operators
 
 def p_popPar(p):
     "popPar :"
     operators.pop()
-    print operators
+    #print operators
 
 def p_opfactor(p):
-    """opfactor : SUM
-            | SUB
+    """opfactor : SUB subQuad
             | empty"""
+
+def p_subQuad(p):
+    "subQuad :"
+    operators.append("*")
+    operands.append(-1)
 
 def p_empty(p):
     'empty :'
@@ -359,11 +375,11 @@ functions.append(Func("global", "void", -1))
 
 readFile("testing\codigoPrueba.txt")
 
-# print function
-# for i in range(0,len(functions)):
-#     print(functions[i].id)
-#     for j in range(0, len(functions[i].varTable)):
-#         print("\t" + functions[i].varTable[j].id)
+def printDirFunc():
+    for i in range(0,len(functions)):
+        print(functions[i].id)
+        for j in range(0, len(functions[i].varTable)):
+            print("\t" + functions[i].varTable[j].id)
 
 for i in range(0, len(cuads)):
     print str(cuads[i])

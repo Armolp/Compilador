@@ -1,7 +1,8 @@
-int prueba = 0 + (1 - 2 * 3)/4 % 5;
+int x;
+int prueba;
 
 char func1( int i , char c ) {
-	i = n * prueba;
+	i = x + prueba * (-10 / 12);
 }
 
 float fib(){
