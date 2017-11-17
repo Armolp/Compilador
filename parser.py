@@ -3,7 +3,7 @@ import ply.yacc as yacc
 from dirFunc import *
 from cuadruplo import *
 
-StackDebuging = True
+StackDebuging = False
 
 tokens = [
     'LPAR','RPAR','LBRACE','RBRACE','LBRACKET','RBRACKET',
@@ -106,7 +106,7 @@ def p_prog(p):
             | empty"""
 
 def p_init(p):
-    #init(INT,INT)
+    #init(INT,INT){}
     "init : INIT addFunc LPAR INT COMA INT RPAR bloque"
 
 def p_addFunc(p):
@@ -177,7 +177,7 @@ def p_estatuto(p):
             | variable
             | invocacion
             | ciclo"""
-
+# asignacion ----------------------------------------
 def p_asignacion(p):
     "asignacion : ID arr EQ expresion SEMI eqQuad"
 
@@ -195,13 +195,13 @@ def p_eqQuad(p):
     operands.append(res)
     tempNum += 1
 
-
+# condicion --------------------------------------
 def p_condicion(p):
     "condicion : IF LPAR expresion RPAR bloque cond1"
 def p_cond1(p):
     """cond1 : ELSE bloque
             | empty"""
-
+# invocacion -------------------------------------
 def p_invocacion(p):
     "invocacion : ID LPAR invo1 RPAR SEMI"
 def p_invo1(p):
@@ -211,6 +211,7 @@ def p_invo2(p):
     """invo2 : COMA expresion invo2
             | empty"""
 
+# ciclo ------------------------------------------
 def p_ciclo(p):
     """ciclo : WHILE LPAR expresion RPAR bloque
             | DO bloque WHILE LPAR expresion RPAR SEMI
@@ -219,8 +220,9 @@ def p_ciclo1(p):
     """ciclo1 : asignacion
             | empty"""
 
+# expresion binaria (&&,||) -----------------------------
 def p_expresion(p):
-    "expresion : not expbool bin"
+    "expresion : not expbool popBinExp bin"
 def p_not(p):
     """not : NOT
             | empty"""
@@ -230,6 +232,25 @@ def p_bin(p):
 def p_opbin(p):
     """opbin : AND
             | OR"""
+    operators.append(p[1])
+def p_popBinExp(p):
+    "popBinExp :"
+    global tempNum
+    oper = ["||","&&"]
+    if len(operators) > 0:
+        if  operators[-1] in oper:
+            if StackDebuging:
+                print operators
+                print operands
+
+            act = operators.pop()
+            arg2 = operands.pop()
+            arg1 = operands.pop()
+            res = "t" + str(tempNum)
+            cuads.append(cuadruplo(len(cuads),act,arg1, arg2, res))
+            operands.append(res)
+            tempNum += 1
+
 
 def p_expbool(p):
     "expbool : exp expbool1"

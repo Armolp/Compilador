@@ -4,7 +4,8 @@ int prueba;
 int func1( int i , char c ) {
 	int a,b,c,d,e,f;
 	a = i < 3;
-	if(f || a || (c && d)){
+	b = true;
+	if(f || a || (c && d && b)){
 		i = 20;
 	}
 	else {
