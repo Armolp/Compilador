@@ -98,7 +98,12 @@ lexer = lex.lex()
 #inicio de parser
 
 def p_programa(p):
-    "programa : prog init loop"
+    "programa : prog init loop endQuad"
+
+def p_endQuad(p):
+    "endQuad :"
+    act = "END"
+    cuads.append(cuadruplo(len(cuads), act, None, None, None))
 
 def p_prog(p):
     """prog : variable prog
@@ -121,16 +126,13 @@ def p_addFunc(p):
 def p_loop(p):
     "loop : LOOP addFunc bloque"
 
-# variable - int x = 0;
+# variable (int x = 0;) -----------------------------------------
 def p_variable(p):
     "variable : tipo var SEMI"
     functions[scope].varTable.append(Var(p[2], p[1], -1))
 def p_var(p):
     "var : ID arr var2"
     p[0] = p[1]
-# def p_var1(p):
-#     """var1 : EQ expresion eqQuad
-#             | empty"""
 
 def p_var2(p):
     """var2 : COMA var
@@ -140,7 +142,7 @@ def p_arr(p):
            | empty
        arr2 : LBRACKET INT RBRACKET
             | empty"""
-
+# funcion --------------------------------------------------
 def p_funcion(p):
     "funcion : tipo ID addFunc LPAR func1 RPAR bloque"
     global scope
@@ -153,7 +155,7 @@ def p_func2(p):
 def p_func3(p):
     """func3 : COMA func2
             | empty"""
-
+# tipo -------------------------------------------------------
 def p_tipo(p):
     """tipo : TYPEVOID
             | TYPEINT
@@ -165,12 +167,14 @@ def p_tipo(p):
 def p_parametro(p):
     "parametro : tipo ID arr"
     functions[scope].varTable.append(Var(p[2], p[1], -1))
+
+# bloque -------------------------------------------------
 def p_bloque(p):
     "bloque : LBRACE bloq1 RBRACE"
 def p_bloq1(p):
     """bloq1 : estatuto bloq1
             | empty"""
-#TODO incluir declaracion de variable
+# estatuto ------------------------------------------------
 def p_estatuto(p):
     """estatuto : asignacion
             | condicion
@@ -192,15 +196,49 @@ def p_eqQuad(p):
     arg1 = operands.pop()
     res = p[-5]
     cuads.append(cuadruplo(len(cuads), act, arg1, None, res))
-    operands.append(res)
+    #operands.append(res)
     tempNum += 1
 
 # condicion --------------------------------------
 def p_condicion(p):
-    "condicion : IF LPAR expresion RPAR bloque cond1"
+    "condicion : IF LPAR expresion RPAR ifQuad1 bloque cond1 ifQuad3"
 def p_cond1(p):
-    """cond1 : ELSE bloque
+    """cond1 : ELSE ifQuad2 bloque
             | empty"""
+# gotoF generation
+def p_ifQuad1(p):
+    "ifQuad1 :"
+    if StackDebuging:
+        print jumps
+
+    global tempNum
+    act = "gotoF"
+    arg1 = operands.pop()
+    cuads.append(cuadruplo(len(cuads), act, arg1, None, None))
+    jumps.append(len(cuads)-1)
+
+def p_ifQuad2(p):
+    "ifQuad2 :"
+    if StackDebuging:
+        print jumps
+
+    act = "goto"
+    cuads.append(cuadruplo(len(cuads),act,None,None,None))
+    # modify last goto
+    idx = jumps.pop()
+    cuads[idx].arg3 = len(cuads)
+
+    jumps.append(len(cuads)-1)
+
+def p_ifQuad3(p):
+    "ifQuad3 :"
+    if StackDebuging:
+        print jumps
+    act = "goto"
+    idx = jumps.pop()
+    cuads[idx].arg3 = len(cuads)
+
+
 # invocacion -------------------------------------
 def p_invocacion(p):
     "invocacion : ID LPAR invo1 RPAR SEMI"
