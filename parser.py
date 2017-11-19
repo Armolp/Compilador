@@ -251,12 +251,30 @@ def p_invo2(p):
 
 # ciclo ------------------------------------------
 def p_ciclo(p):
-    """ciclo : WHILE LPAR expresion RPAR bloque
+    """ciclo : WHILE whileQuad1 LPAR expresion RPAR whileQuad2 bloque whileQuad3
             | DO bloque WHILE LPAR expresion RPAR SEMI
             | FOR LPAR ciclo1 SEMI expresion SEMI ciclo1 RPAR"""
 def p_ciclo1(p):
     """ciclo1 : asignacion
             | empty"""
+def p_whileQuad1(p):
+    "whileQuad1 :"
+    jumps.append(len(cuads)-1)
+def p_whileQuad2(p):
+    "whileQuad2 :"
+    act = "gotoF"
+    arg1 = operands.pop()
+    cuads.append(cuadruplo(len(cuads),act,arg1,None,None))
+    jumps.append(len(cuads)-1)
+def p_whileQuad3(p):
+    "whileQuad3 :"
+    print jumps
+    act = "goto"
+    idx = jumps.pop()
+    arg3 = jumps.pop()
+    cuads.append(cuadruplo(len(cuads),act,None,None,arg3))
+    cuads[idx].arg3 = len(cuads)
+
 
 # expresion binaria (&&,||) -----------------------------
 def p_expresion(p):
@@ -289,7 +307,7 @@ def p_popBinExp(p):
             operands.append(res)
             tempNum += 1
 
-
+# expresion relacional (<,>,==) -------------------------------------
 def p_expbool(p):
     "expbool : exp expbool1"
 def p_expbool1(p):
@@ -322,7 +340,7 @@ def p_popBoolExp(p):
             operands.append(res)
             tempNum += 1
 
-
+# expresion aritmetica (+,-) --------------------------------------
 def p_exp(p):
     "exp : term popExp exp1"
 
@@ -354,6 +372,7 @@ def p_opexp(p):
     operators.append(p[1])
     #print operators
 
+# term (*,/,%) -----------------------------------------------------------
 def p_term(p):
     "term : factor popFactor term1"
 def p_term1(p):
@@ -384,7 +403,7 @@ def p_opterm(p):
             | MOD"""
     operators.append(p[1])
     #print operators
-
+# factor (ids, Const, ())---------------------------------------------
 def p_factor(p):
     "factor : opfactor fact1"
 
@@ -396,6 +415,10 @@ def p_fact1(p):
             | CHAR pushConst
             | LPAR pushPar expresion RPAR popPar
             | invocacion"""
+
+def p_opfactor(p):
+    """opfactor : SUB subQuad
+            | empty"""
 
 def p_pushConst(p):
     "pushConst :"
@@ -412,20 +435,17 @@ def p_popPar(p):
     operators.pop()
     #print operators
 
-def p_opfactor(p):
-    """opfactor : SUB subQuad
-            | empty"""
-
 def p_subQuad(p):
     "subQuad :"
     operators.append("*")
     operands.append(-1)
 
+# empty rule -----------------------------------------------------------
 def p_empty(p):
     'empty :'
     pass
 
-#
+# parser end -----------------------------------------------------------
 
 #Es llamado cuando sucede un error en el parser
 def p_error(p):
@@ -474,3 +494,8 @@ def printDirFunc():
 
 for i in range(0, len(cuads)):
     print str(cuads[i])
+
+print jumps
+print operators
+print operands
+print types
