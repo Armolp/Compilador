@@ -98,33 +98,46 @@ lexer = lex.lex()
 #inicio de parser
 
 def p_programa(p):
-    "programa : prog init loop endQuad"
-
-def p_endQuad(p):
-    "endQuad :"
-    act = "END"
-    cuads.append(cuadruplo(len(cuads), act, None, None, None))
+    "programa : startQuad prog init loop"
 
 def p_prog(p):
     """prog : variable prog
             | funcion prog
             | empty"""
 
+def p_startQuad(p):
+    "startQuad :"
+    act = "goto"
+    cuads.append(cuadruplo(len(cuads), act, None, None, None))
+    jumps.append(len(cuads)-1)
+# funcion init y loop -----------------------------------------------
 def p_init(p):
-    #init(INT,INT){}
-    "init : INIT addFunc LPAR INT COMA INT RPAR bloque"
+    "init : INIT addFunc initQuad1 LPAR INT COMA INT RPAR bloque"
+
+def p_loop(p):
+    "loop : LOOP addFunc loopQuad1 bloque loopQuad2"
 
 def p_addFunc(p):
     "addFunc : empty"
     if p[-2] == None:
-        functions.append(Func(p[-1], "void", -1))
+        functions.append(Func(p[-1], "void", len(cuads)))
     else:
-        functions.append(Func(p[-1], p[-2], -1))
+        functions.append(Func(p[-1], p[-2], len(cuads)))
     global scope
     scope = len(functions) -1
 
-def p_loop(p):
-    "loop : LOOP addFunc bloque"
+def p_initQuad1(p):
+    "initQuad1 :"
+    idx = jumps.pop()
+    cuads[idx].arg3 = len(cuads)
+def p_loopQuad1(p):
+    "loopQuad1 :"
+    jumps.append(len(cuads))
+def p_loopQuad2(p):
+    "loopQuad2 :"
+    act = "goto"
+    arg3 = jumps.pop()
+    cuads.append(cuadruplo(len(cuads), act, None, None, arg3))
 
 # variable (int x = 0;) -----------------------------------------
 def p_variable(p):
@@ -144,7 +157,7 @@ def p_arr(p):
             | empty"""
 # funcion --------------------------------------------------
 def p_funcion(p):
-    "funcion : tipo ID addFunc LPAR func1 RPAR bloque"
+    "funcion : tipo ID addFunc LPAR func1 RPAR bloque endProcQuad"
     global scope
     scope = 0
 def p_func1(p):
@@ -155,6 +168,10 @@ def p_func2(p):
 def p_func3(p):
     """func3 : COMA func2
             | empty"""
+def p_endProcQuad(p):
+    "endProcQuad :"
+    act = "EndProc"
+    cuads.append(cuadruplo(len(cuads), act, None, None, None))
 # tipo -------------------------------------------------------
 def p_tipo(p):
     """tipo : TYPEVOID
@@ -259,16 +276,15 @@ def p_ciclo1(p):
             | empty"""
 def p_whileQuad1(p):
     "whileQuad1 :"
-    jumps.append(len(cuads)-1)
+    jumps.append(len(cuads))
 def p_whileQuad2(p):
     "whileQuad2 :"
     act = "gotoF"
     arg1 = operands.pop()
+    jumps.append(len(cuads))
     cuads.append(cuadruplo(len(cuads),act,arg1,None,None))
-    jumps.append(len(cuads)-1)
 def p_whileQuad3(p):
     "whileQuad3 :"
-    print jumps
     act = "goto"
     idx = jumps.pop()
     arg3 = jumps.pop()

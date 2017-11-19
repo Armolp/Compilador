@@ -13,9 +13,11 @@ int func1( int i , char c ) {
 }
 
 init (0,0){
-	bool b;
+	bool a;
+	a = 2 + 4;
 }
 
 loop {
 	char c;
+	c = 12;
 }
