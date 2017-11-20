@@ -10,6 +10,8 @@ int func1( int i , char c ) {
 		}
 		b = b + 1;
 	}
+
+	drawLine(0,0,100,100);
 }
 
 init (0,0){

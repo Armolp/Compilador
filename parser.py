@@ -23,12 +23,18 @@ reserved = {
     'for' : 'FOR',
     'do' : 'DO',
     'while' : 'WHILE',
-    'sin' : 'SINFUNC',
     'void' : 'TYPEVOID',
     'int' : 'TYPEINT',
     'float' : 'TYPEFLOAT',
     'bool' : 'TYPEBOOL',
-    'char' : 'TYPECHAR'
+    'char' : 'TYPECHAR',
+    
+    'sin' : 'SINFUNC',
+    'cos' : 'COSFUNC',
+    'drawPoint' : 'POINTFUNC',
+    'drawCircle' : 'CIRCLEFUNC',
+    'drawRect' : 'RECTFUNC',
+    'drawLine' : 'LINEFUNC'
 }
 
 tokens += reserved.values()
@@ -197,7 +203,16 @@ def p_estatuto(p):
             | condicion
             | variable
             | invocacion
-            | ciclo"""
+            | ciclo
+            | reserved"""
+
+def p_reserved(p):
+    """reserved : SINFUNC LPAR expresion RPAR SEMI
+                | COSFUNC LPAR expresion RPAR SEMI
+                | POINTFUNC LPAR expresion COMA expresion RPAR SEMI
+                | CIRCLEFUNC LPAR expresion COMA expresion COMA expresion RPAR SEMI
+                | LINEFUNC LPAR expresion COMA expresion COMA expresion COMA expresion RPAR SEMI"""
+
 # asignacion ----------------------------------------
 def p_asignacion(p):
     "asignacion : ID arr EQ expresion SEMI eqQuad"
