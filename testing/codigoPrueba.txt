@@ -1,15 +1,14 @@
 int x;
 int prueba;
 
-int func1( int i , char c ) {
-	int a,b,c,d,e,f;
-	b = 0;
-	while(b < 10) {
-		if(b%3 == 0){
-			a = b + 2;
-		}
-		b = b + 1;
+int fib( int n ) {
+	if( n == 1 ) {
+		return 1;
 	}
+	if( n == 0 ) {
+		return 0;
+	}
+	return fib(n-1) + fib(n-2);
 }
 
 void reservedFuncs(){
@@ -19,7 +18,7 @@ void reservedFuncs(){
 	drawCircle(x,y,10);
 	drawLine(x,y,100,100);
 	drawRect(x,y,10,10);
-	func1(1,2,3);
+	moby(1+a,2*3,3+3);
 }
 
 init (0,0){

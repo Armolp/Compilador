@@ -9,12 +9,19 @@ class Func:
         self.dir = dir
         self.varTable = []
 
+    def __str__(self):
+        res = str(self.id)
+        res += " " + str(self.dir)
+        #res += " " + str(self.varTable)
+        return res
+
 class Var:
     def __init__(self, id, type, dir):
         self.id = id
         self.type = type
         self.dir = dir
         self.dim = []
+        
     def __str__(self):
         res = str(self.id)
         res += " " + str(self.type)

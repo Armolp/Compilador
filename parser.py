@@ -28,6 +28,7 @@ reserved = {
     'float' : 'TYPEFLOAT',
     'bool' : 'TYPEBOOL',
     'char' : 'TYPECHAR',
+    'return' : 'RETURN',
 
     'sin' : 'SINFUNC',
     'cos' : 'COSFUNC',
@@ -202,10 +203,23 @@ def p_bloq1(p):
 # estatuto ------------------------------------------------
 def p_estatuto(p):
     """estatuto : asignacion
-            | condicion
-            | variable
-            | invocacion SEMI
-            | ciclo"""
+                | condicion
+                | variable
+                | invocacion SEMI
+                | ciclo
+                | return """
+
+# return --------------------------------------------------
+
+def p_return(p):
+    "return : RETURN expresion returnQuad SEMI"
+
+def p_returnQuad(p):
+    "returnQuad :"
+    act = "return"
+    arg1 = operands.pop()
+    cuads.append(cuadruplo(len(cuads), act, arg1, None, None))
+
 
 # asignacion ----------------------------------------
 def p_asignacion(p):
@@ -222,8 +236,6 @@ def p_eqQuad(p):
     arg1 = operands.pop()
     res = p[-5]
     cuads.append(cuadruplo(len(cuads), act, arg1, None, res))
-    #operands.append(res)
-    tempNum += 1
 
 # condicion --------------------------------------
 def p_condicion(p):
@@ -268,7 +280,8 @@ def p_ifQuad3(p):
 # invocacion -------------------------------------
 def p_invocacion(p):
     """invocacion : reserved
-                  | ID eraQuad LPAR invo1 RPAR"""
+                  | ID eraQuad LPAR pushPar invo1 RPAR popPar gosubQuad"""
+    p[0] = p[1]
 
 def p_reserved(p):
     """reserved : SINFUNC LPAR expresion RPAR sinQuad
@@ -277,6 +290,7 @@ def p_reserved(p):
                 | CIRCLEFUNC LPAR expresion COMA expresion COMA expresion RPAR circleQuad
                 | LINEFUNC LPAR expresion COMA expresion COMA expresion COMA expresion RPAR lineQuad
                 | RECTFUNC LPAR expresion COMA expresion COMA expresion COMA expresion RPAR rectQuad"""
+    p[0] = None
 
 def p_invo1(p):
     """invo1 : expresion paramQuad invo2
@@ -303,6 +317,14 @@ def p_paramQuad(p):
     arg3 = "param"+str(paramNum)
     paramNum += 1
     cuads.append(cuadruplo(len(cuads), act, arg1, None, arg3))
+
+def p_gosubQuad(p):
+    "gosubQuad :"
+    act = "gosub"
+    arg1 = p[-7]
+    cuads.append(cuadruplo(len(cuads), act, arg1, None, None))
+    global paramNum
+    paramNum = 1
 
 def p_sinQuad(p):
     "sinQuad :"
@@ -525,7 +547,7 @@ def p_fact1(p):
             | BOOL pushConst
             | CHAR pushConst
             | LPAR pushPar expresion RPAR popPar
-            | invocacion"""
+            | invocacion funcQuad"""
 
 def p_opfactor(p):
     """opfactor : SUB subQuad
@@ -538,7 +560,7 @@ def p_pushConst(p):
 
 def p_pushPar(p):
     "pushPar :"
-    operators.append(p[-1])
+    operators.append("(")
     #print operators
 
 def p_popPar(p):
@@ -550,6 +572,18 @@ def p_subQuad(p):
     "subQuad :"
     operators.append("*")
     operands.append(-1)
+
+def p_funcQuad(p):
+    "funcQuad :"
+    # if the function has no name then it is a reserved function
+    if (p[-1] != None):
+        global tempNum
+        act = "="
+        arg1 = p[-1]
+        res = "t" + str(tempNum)
+        cuads.append(cuadruplo(len(cuads), act, arg1, None, res))
+        operands.append(res)
+        tempNum += 1
 
 # empty rule -----------------------------------------------------------
 def p_empty(p):
@@ -599,7 +633,7 @@ readFile("testing\codigoPrueba.txt")
 
 def printDirFunc():
     for i in range(0,len(functions)):
-        print(functions[i].id)
+        print str(functions[i])
         for j in range(0, len(functions[i].varTable)):
             print("\t" + str(functions[i].varTable[j]))
 
