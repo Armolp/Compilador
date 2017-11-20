@@ -28,7 +28,7 @@ reserved = {
     'float' : 'TYPEFLOAT',
     'bool' : 'TYPEBOOL',
     'char' : 'TYPECHAR',
-    
+
     'sin' : 'SINFUNC',
     'cos' : 'COSFUNC',
     'drawPoint' : 'POINTFUNC',
@@ -202,16 +202,8 @@ def p_estatuto(p):
     """estatuto : asignacion
             | condicion
             | variable
-            | invocacion
-            | ciclo
-            | reserved"""
-
-def p_reserved(p):
-    """reserved : SINFUNC LPAR expresion RPAR SEMI
-                | COSFUNC LPAR expresion RPAR SEMI
-                | POINTFUNC LPAR expresion COMA expresion RPAR SEMI
-                | CIRCLEFUNC LPAR expresion COMA expresion COMA expresion RPAR SEMI
-                | LINEFUNC LPAR expresion COMA expresion COMA expresion COMA expresion RPAR SEMI"""
+            | invocacion SEMI
+            | ciclo"""
 
 # asignacion ----------------------------------------
 def p_asignacion(p):
@@ -273,13 +265,80 @@ def p_ifQuad3(p):
 
 # invocacion -------------------------------------
 def p_invocacion(p):
-    "invocacion : ID LPAR invo1 RPAR SEMI"
+    """invocacion : reserved
+                  | ID LPAR invo1 RPAR"""
+
+def p_reserved(p):
+    """reserved : SINFUNC LPAR expresion RPAR sinQuad
+                | COSFUNC LPAR expresion RPAR cosQuad
+                | POINTFUNC LPAR expresion COMA expresion RPAR pointQuad
+                | CIRCLEFUNC LPAR expresion COMA expresion COMA expresion RPAR circleQuad
+                | LINEFUNC LPAR expresion COMA expresion COMA expresion COMA expresion RPAR lineQuad
+                | RECTFUNC LPAR expresion COMA expresion COMA expresion COMA expresion RPAR rectQuad"""
+
 def p_invo1(p):
     """invo1 : expresion invo2
             | empty"""
 def p_invo2(p):
     """invo2 : COMA expresion invo2
             | empty"""
+
+def p_sinQuad(p):
+    "sinQuad :"
+    global tempNum
+    act = "sin"
+    arg1 = operands.pop()
+    res = "t" + str(tempNum)
+    cuads.append(cuadruplo(len(cuads), act, arg1, None, res))
+    operands.append(res)
+    tempNum += 1
+
+def p_cosQuad(p):
+    "cosQuad :"
+    global tempNum
+    act = "cos"
+    arg1 = operands.pop()
+    res = "t" + str(tempNum)
+    cuads.append(cuadruplo(len(cuads), act, arg1, None, res))
+    operands.append(res)
+    tempNum += 1
+
+def p_pointQuad(p):
+    "pointQuad :"
+    act = "point"
+    arg2 = operands.pop()
+    arg1 = operands.pop()
+    cuads.append(cuadruplo(len(cuads), act, arg1, arg2, None))
+
+def p_circleQuad(p):
+    "circleQuad :"
+    act = "circle"
+    arg3 = operands.pop()   # radius
+    arg2 = operands.pop()   # y position
+    arg1 = operands.pop()   # x position
+    cuads.append(cuadruplo(len(cuads), act, arg1, arg2, arg3))
+
+def p_lineQuad(p):
+    "lineQuad :"
+    act = "from"
+    arg2 = operands.pop()   # y position
+    arg1 = operands.pop()   # x position
+    cuads.append(cuadruplo(len(cuads), act, arg1, arg2, None))
+    act = "to"
+    arg2 = operands.pop()   # y position
+    arg1 = operands.pop()   # x position
+    cuads.append(cuadruplo(len(cuads), act, arg1, arg2, None))
+
+def p_rectQuad(p):
+    "rectQuad :"
+    act = "rect1"
+    arg2 = operands.pop()   # y position
+    arg1 = operands.pop()   # x position
+    cuads.append(cuadruplo(len(cuads), act, arg1, arg2, None))
+    act = "rect2"
+    arg2 = operands.pop()   # shape height
+    arg1 = operands.pop()   # shape width
+    cuads.append(cuadruplo(len(cuads), act, arg1, arg2, None))
 
 # ciclo ------------------------------------------
 def p_ciclo(p):
