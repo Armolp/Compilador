@@ -148,10 +148,8 @@ def p_loopQuad2(p):
 # variable (int x = 0;) -----------------------------------------
 def p_variable(p):
     "variable : tipo var SEMI"
-    functions[scope].varTable.append(Var(p[2], p[1], -1))
 def p_var(p):
-    "var : ID arr var2"
-    p[0] = p[1]
+    "var : ID arr addVar var2"
 
 def p_var2(p):
     """var2 : COMA var
@@ -161,6 +159,10 @@ def p_arr(p):
            | empty
        arr2 : LBRACKET INT RBRACKET
             | empty"""
+
+def p_addVar(p):
+    "addVar :"
+    functions[scope].varTable.append(Var( p[-2], None, -1))
 # funcion --------------------------------------------------
 def p_funcion(p):
     "funcion : tipo ID addFunc LPAR func1 RPAR bloque endProcQuad"
@@ -589,3 +591,5 @@ print jumps
 print operators
 print operands
 print types
+
+printDirFunc()
