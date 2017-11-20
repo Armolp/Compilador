@@ -19,6 +19,7 @@ void reservedFuncs(){
 	drawCircle(x,y,10);
 	drawLine(x,y,100,100);
 	drawRect(x,y,10,10);
+	func1(1,2,3);
 }
 
 init (0,0){

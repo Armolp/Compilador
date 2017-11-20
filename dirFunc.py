@@ -15,6 +15,12 @@ class Var:
         self.type = type
         self.dir = dir
         self.dim = []
+    def __str__(self):
+        res = str(self.id)
+        res += " " + str(self.type)
+        res += " " + str(self.dir)
+        #res += " " + str(self.dim)
+        return res
 
 class DimNode:
     def __init__(self, d, m):

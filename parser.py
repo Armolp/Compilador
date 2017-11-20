@@ -268,7 +268,7 @@ def p_ifQuad3(p):
 # invocacion -------------------------------------
 def p_invocacion(p):
     """invocacion : reserved
-                  | ID LPAR invo1 RPAR"""
+                  | ID eraQuad LPAR invo1 RPAR"""
 
 def p_reserved(p):
     """reserved : SINFUNC LPAR expresion RPAR sinQuad
@@ -279,11 +279,30 @@ def p_reserved(p):
                 | RECTFUNC LPAR expresion COMA expresion COMA expresion COMA expresion RPAR rectQuad"""
 
 def p_invo1(p):
-    """invo1 : expresion invo2
+    """invo1 : expresion paramQuad invo2
             | empty"""
 def p_invo2(p):
-    """invo2 : COMA expresion invo2
+    """invo2 : COMA expresion paramQuad invo2
             | empty"""
+
+paramNum = 1
+
+def p_eraQuad(p):
+    "eraQuad :"
+    act = "era"
+    arg1 = p[-1]
+    cuads.append(cuadruplo(len(cuads), act, arg1, None, None))
+    global paramNum
+    paramNum = 1
+
+def p_paramQuad(p):
+    "paramQuad :"
+    global paramNum
+    act = "param"
+    arg1 = operands.pop()
+    arg3 = "param"+str(paramNum)
+    paramNum += 1
+    cuads.append(cuadruplo(len(cuads), act, arg1, None, arg3))
 
 def p_sinQuad(p):
     "sinQuad :"
@@ -582,7 +601,7 @@ def printDirFunc():
     for i in range(0,len(functions)):
         print(functions[i].id)
         for j in range(0, len(functions[i].varTable)):
-            print("\t" + functions[i].varTable[j].id)
+            print("\t" + str(functions[i].varTable[j]))
 
 for i in range(0, len(cuads)):
     print str(cuads[i])
