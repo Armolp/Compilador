@@ -2,6 +2,7 @@ import ply.lex as lex
 import ply.yacc as yacc
 from dirFunc import *
 from cuadruplo import *
+from maquinaVirtual import *
 
 StackDebuging = False
 
@@ -234,14 +235,15 @@ def p_asignacion(p):
 def p_eqQuad(p):
     "eqQuad :"
     if StackDebuging:
-        print operators
-        print operands
+        print (operators)
+        print (operands)
 
     global tempNum
     act = "="
     arg1 = operands.pop()
     res = p[-5]
     cuads.append(cuadruplo(len(cuads), act, arg1, None, res))
+    #operands.append(res)
 
 # condicion --------------------------------------
 def p_condicion(p):
@@ -253,7 +255,7 @@ def p_cond1(p):
 def p_ifQuad1(p):
     "ifQuad1 :"
     if StackDebuging:
-        print jumps
+        print (jumps)
 
     global tempNum
     act = "gotoF"
@@ -264,7 +266,7 @@ def p_ifQuad1(p):
 def p_ifQuad2(p):
     "ifQuad2 :"
     if StackDebuging:
-        print jumps
+        print (jumps)
 
     act = "goto"
     cuads.append(cuadruplo(len(cuads),act,None,None,None))
@@ -277,7 +279,7 @@ def p_ifQuad2(p):
 def p_ifQuad3(p):
     "ifQuad3 :"
     if StackDebuging:
-        print jumps
+        print (jumps)
     act = "goto"
     idx = jumps.pop()
     cuads[idx].arg3 = len(cuads)
@@ -435,8 +437,8 @@ def p_popBinExp(p):
     if len(operators) > 0:
         if  operators[-1] in oper:
             if StackDebuging:
-                print operators
-                print operands
+                print (operators)
+                print (operands)
 
             act = operators.pop()
             arg2 = operands.pop()
@@ -468,8 +470,8 @@ def p_popBoolExp(p):
     if len(operators) > 0:
         if  operators[-1] in oper:
             if StackDebuging:
-                print operators
-                print operands
+                print (operators)
+                print (operands)
 
             act = operators.pop()
             arg2 = operands.pop()
@@ -490,8 +492,8 @@ def p_popExp(p):
     if len(operators) > 0:
         if  operators[-1] in oper:
             if StackDebuging:
-                print operators
-                print operands
+                print (operators)
+                print (operands)
 
             act = operators.pop()
             arg2 = operands.pop()
@@ -525,8 +527,8 @@ def p_popFactor(p):
     if len(operators) > 0:
         if  operators[-1] in oper:
             if StackDebuging:
-                print operators
-                print operands
+                print (operators)
+                print (operands)
 
             act = operators.pop()
             arg2 = operands.pop()
@@ -644,16 +646,17 @@ readFile("testing\codigoPrueba.txt")
 
 def printDirFunc():
     for i in range(0,len(functions)):
-        print str(functions[i])
+        print(functions[i].id + " " + str(functions[i].dir))
+        print (str(functions[i]))
         for j in range(0, len(functions[i].varTable)):
+            print("\t" + functions[i].varTable[j].id + " " + str(functions[i].varTable[j].dir))
             print("\t" + str(functions[i].varTable[j]))
 
-for i in range(0, len(cuads)):
-    print str(cuads[i])
+    for i in range(0, len(cuads)):
+        print(str(cuads[i]))
 
-print jumps
-print operators
-print operands
-print types
+
+#maquina = maquinaVirtual(functions,cuads)
+#maquina.run("END")
 
 printDirFunc()

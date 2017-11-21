@@ -27,6 +27,7 @@ class Operation(Enum):
      NOTEQUAL = 11
      AND = 12
      OR = 13
+     MOD = 14
 
 
 cubo = {
@@ -47,6 +48,7 @@ cubo = {
         Operation.NOTEQUAL:Type.BOOL,
         Operation.AND:Type.ERROR,
         Operation.OR:Type.ERROR,
+        Operation.MOD:Type.INT
         },
     #int operacion float
       Type.FLOAT: {
@@ -63,6 +65,7 @@ cubo = {
         Operation.NOTEQUAL:Type.BOOL,
         Operation.AND:Type.ERROR,
         Operation.OR:Type.ERROR,
+        Operation.MOD:Type.FLOAT
         },
     #int operacion CHAR
       Type.CHAR: {
@@ -79,6 +82,7 @@ cubo = {
         Operation.NOTEQUAL:Type.ERROR,
         Operation.AND:Type.ERROR,
         Operation.OR:Type.ERROR,
+        Operation.MOD: Type.ERROR
         },
     #int operacion bool
       Type.BOOL: {
@@ -95,6 +99,7 @@ cubo = {
         Operation.NOTEQUAL:Type.ERROR,
         Operation.AND:Type.ERROR,
         Operation.OR:Type.ERROR,
+        Operation.MOD: Type.ERROR
         },
     #int operacion array
       Type.ARRAY: {
@@ -111,6 +116,7 @@ cubo = {
         Operation.NOTEQUAL:Type.ERROR,
         Operation.AND:Type.ERROR,
         Operation.OR:Type.ERROR,
+        Operation.MOD: Type.ERROR
         },
       },
 #float operacion tipo
@@ -130,6 +136,7 @@ cubo = {
         Operation.NOTEQUAL:Type.BOOL,
         Operation.AND:Type.ERROR,
         Operation.OR:Type.ERROR,
+        Operation.MOD: Type.ERROR
         },
     #float operacion float
       Type.FLOAT: {
@@ -146,6 +153,7 @@ cubo = {
         Operation.NOTEQUAL:Type.BOOL,
         Operation.AND:Type.ERROR,
         Operation.OR:Type.ERROR,
+        Operation.MOD: Type.ERROR
         },
     #float operacion CHAR
       Type.CHAR: {
@@ -162,6 +170,7 @@ cubo = {
         Operation.NOTEQUAL:Type.ERROR,
         Operation.AND:Type.ERROR,
         Operation.OR:Type.ERROR,
+        Operation.MOD: Type.ERROR
         },
     #float operacion bool
       Type.BOOL: {
@@ -178,6 +187,7 @@ cubo = {
         Operation.NOTEQUAL:Type.ERROR,
         Operation.AND:Type.ERROR,
         Operation.OR:Type.ERROR,
+        Operation.MOD: Type.ERROR
         },
     #float operacion array
       Type.ARRAY: {
@@ -194,6 +204,7 @@ cubo = {
         Operation.NOTEQUAL:Type.ERROR,
         Operation.AND:Type.ERROR,
         Operation.OR:Type.ERROR,
+        Operation.MOD: Type.ERROR
         },
       },
 #CHAR operacion tipo
@@ -213,6 +224,7 @@ cubo = {
         Operation.NOTEQUAL:Type.ERROR,
         Operation.AND:Type.ERROR,
         Operation.OR:Type.ERROR,
+        Operation.MOD: Type.ERROR
         },
     #CHAR operacion float
       Type.FLOAT: {
@@ -229,6 +241,7 @@ cubo = {
         Operation.NOTEQUAL:Type.ERROR,
         Operation.AND:Type.ERROR,
         Operation.OR:Type.ERROR,
+        Operation.MOD: Type.ERROR
         },
     #CHAR operacion CHAR
       Type.CHAR: {
@@ -245,6 +258,7 @@ cubo = {
         Operation.NOTEQUAL:Type.BOOL,
         Operation.AND:Type.ERROR,
         Operation.OR:Type.ERROR,
+        Operation.MOD: Type.ERROR
         },
     #CHAR operacion CHAR
       Type.BOOL: {
@@ -261,6 +275,7 @@ cubo = {
         Operation.NOTEQUAL:Type.ERROR,
         Operation.AND:Type.ERROR,
         Operation.OR:Type.ERROR,
+        Operation.MOD: Type.ERROR
         },
     #CHAR operacion array
       Type.ARRAY: {
@@ -277,6 +292,7 @@ cubo = {
         Operation.NOTEQUAL:Type.ERROR,
         Operation.AND:Type.ERROR,
         Operation.OR:Type.ERROR,
+        Operation.MOD: Type.ERROR
         },
       },
 #bool operacion tipo
@@ -296,6 +312,7 @@ cubo = {
         Operation.NOTEQUAL:Type.ERROR,
         Operation.AND:Type.ERROR,
         Operation.OR:Type.ERROR,
+        Operation.MOD: Type.ERROR
         },
     #bool operacion float
       Type.FLOAT: {
@@ -312,6 +329,7 @@ cubo = {
         Operation.NOTEQUAL:Type.ERROR,
         Operation.AND:Type.ERROR,
         Operation.OR:Type.ERROR,
+        Operation.MOD: Type.ERROR
         },
     #bool operacion CHAR
       Type.CHAR: {
@@ -328,6 +346,7 @@ cubo = {
         Operation.NOTEQUAL:Type.ERROR,
         Operation.AND:Type.ERROR,
         Operation.OR:Type.ERROR,
+        Operation.MOD: Type.ERROR
         },
     #bool operacion bool
       Type.BOOL: {
@@ -344,6 +363,7 @@ cubo = {
         Operation.NOTEQUAL:Type.BOOL,
         Operation.AND:Type.BOOL,
         Operation.OR:Type.BOOL,
+        Operation.MOD: Type.ERROR
         },
     #bool operacion array
       Type.ARRAY: {
@@ -360,6 +380,7 @@ cubo = {
         Operation.NOTEQUAL:Type.ERROR,
         Operation.AND:Type.ERROR,
         Operation.OR:Type.ERROR,
+        Operation.MOD: Type.ERROR
         },
       },
 #array operacion tipo
@@ -379,6 +400,7 @@ cubo = {
         Operation.NOTEQUAL:Type.ERROR,
         Operation.AND:Type.ERROR,
         Operation.OR:Type.ERROR,
+        Operation.MOD: Type.ERROR
         },
     #array operacion float
       Type.FLOAT: {
@@ -395,6 +417,7 @@ cubo = {
         Operation.NOTEQUAL:Type.ERROR,
         Operation.AND:Type.ERROR,
         Operation.OR:Type.ERROR,
+        Operation.MOD: Type.ERROR
         },
     #array operacion CHAR
       Type.CHAR: {
@@ -411,6 +434,7 @@ cubo = {
         Operation.NOTEQUAL:Type.ERROR,
         Operation.AND:Type.ERROR,
         Operation.OR:Type.ERROR,
+        Operation.MOD: Type.ERROR
         },
     #array operacion bool
       Type.BOOL: {
@@ -427,6 +451,7 @@ cubo = {
         Operation.NOTEQUAL:Type.ERROR,
         Operation.AND:Type.ERROR,
         Operation.OR:Type.ERROR,
+        Operation.MOD: Type.ERROR
         },
     #array operacion array
       Type.ARRAY: {
@@ -443,12 +468,13 @@ cubo = {
         Operation.NOTEQUAL:Type.ERROR,
         Operation.AND:Type.ERROR,
         Operation.OR:Type.ERROR,
+        Operation.MOD: Type.ERROR
         },
       },
     }
 
-# prueba = cubo[Type.INT][Type.INT][Operation.PLUS]
-# print (prueba)
+#prueba = cubo[Type.INT][Type.INT][Operation.PLUS]
+#print (prueba)
 # prueba = cubo[Type.INT][Type.FLOAT][Operation.DIVIDE]
 # print (prueba)
 # prueba = cubo[Type.BOOL][Type.INT][Operation.PLUS]
