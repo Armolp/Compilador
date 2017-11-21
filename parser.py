@@ -119,17 +119,14 @@ def p_startQuad(p):
     jumps.append(len(cuads)-1)
 # funcion init y loop -----------------------------------------------
 def p_init(p):
-    "init : INIT addFunc initQuad1 LPAR INT COMA INT RPAR bloque"
+    "init : INIT addInit initQuad1 LPAR INT COMA INT RPAR bloque"
 
 def p_loop(p):
-    "loop : LOOP addFunc loopQuad1 bloque loopQuad2"
+    "loop : LOOP addInit loopQuad1 bloque loopQuad2"
 
-def p_addFunc(p):
-    "addFunc : empty"
-    if p[-2] == None:
-        functions.append(Func(p[-1], "void", len(cuads)))
-    else:
-        functions.append(Func(p[-1], p[-2], len(cuads)))
+def p_addInit(p):
+    "addInit : empty"
+    functions.append(Func(p[-1], "void", len(cuads)))
     global scope
     scope = len(functions) -1
 
@@ -166,9 +163,12 @@ def p_addVar(p):
     functions[scope].varTable.append(Var( p[-2], None, -1))
 # funcion --------------------------------------------------
 def p_funcion(p):
-    "funcion : tipo ID addFunc LPAR func1 RPAR bloque endProcQuad"
+    "funcion : funcType ID addFunc LPAR func1 RPAR bloque endProcQuad"
     global scope
     scope = 0
+def p_funcType(p):
+    """funcType : TYPEVOID
+                | tipo"""
 def p_func1(p):
     """func1 : func2
             | empty"""
@@ -177,14 +177,20 @@ def p_func2(p):
 def p_func3(p):
     """func3 : COMA func2
             | empty"""
+
+def p_addFunc(p):
+    "addFunc : empty"
+    functions.append(Func(p[-1], p[-2], len(cuads)))
+    global scope
+    scope = len(functions) -1
+
 def p_endProcQuad(p):
     "endProcQuad :"
     act = "EndProc"
     cuads.append(cuadruplo(len(cuads), act, None, None, None))
 # tipo -------------------------------------------------------
 def p_tipo(p):
-    """tipo : TYPEVOID
-            | TYPEINT
+    """tipo : TYPEINT
             | TYPEFLOAT
             | TYPEBOOL
             | TYPECHAR"""
@@ -541,21 +547,26 @@ def p_factor(p):
     "factor : opfactor fact1"
 
 def p_fact1(p):
-    """fact1 : ID pushConst
-            | INT pushConst
-            | FLOAT pushConst
-            | BOOL pushConst
-            | CHAR pushConst
-            | LPAR pushPar expresion RPAR popPar
-            | invocacion funcQuad"""
+    """fact1 : ID pushID
+             | INT pushConst
+             | FLOAT pushConst
+             | BOOL pushConst
+             | CHAR pushConst
+             | LPAR pushPar expresion RPAR popPar
+             | invocacion funcQuad"""
 
 def p_opfactor(p):
     """opfactor : SUB subQuad
             | empty"""
 
+def p_pushID(p):
+    "pushID :"
+    operands.append(p[-1])
+
 def p_pushConst(p):
     "pushConst :"
     operands.append(p[-1])
+    #types.append(type(p[-1]))
     #print operands
 
 def p_pushPar(p):

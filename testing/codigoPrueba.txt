@@ -1,32 +1,13 @@
-int x;
-int prueba;
+int prueba = 0 + (-1 - 2 * 3)/4 % 5;
 
-int fib( int n ) {
-	if( n == 1 ) {
-		return 1;
-	}
-	if( n == 0 ) {
-		return 0;
-	}
-	return fib(n-1) + fib(n-2);
+void mojoyd( int i , char c ) {
+	i = n * prueba;
 }
 
-void reservedFuncs(){
-	x = sin(a);
-	y = cos(a);
-	drawPoint(x,y);
-	drawCircle(x,y,10);
-	drawLine(x,y,100,100);
-	drawRect(x,y,10,10);
-	moby(1+a,2*3,3+3);
-}
+init(0 , 0){
 
-init (0,0){
-	bool a;
-	a = 2 + 4;
 }
 
 loop {
-	char c;
-	c = 12;
+
 }
