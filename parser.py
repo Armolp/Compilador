@@ -438,7 +438,7 @@ def p_printQuad(p):
 
 def p_pointQuad(p):
     "pointQuad :"
-    act = "point"
+    act = "drawPoint"
     arg2 = getDirById(operands.pop())
     typ2 = types.pop()
     arg1 = getDirById(operands.pop())
@@ -447,7 +447,7 @@ def p_pointQuad(p):
 
 def p_circleQuad(p):
     "circleQuad :"
-    act = "circle"
+    act = "drawCircle"
     arg3 = getDirById(operands.pop())   # radius
     typ3 = types.pop()
     arg2 = getDirById(operands.pop())   # y position
