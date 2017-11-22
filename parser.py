@@ -390,11 +390,10 @@ def p_paramQuad(p):
     paramNum += 1
     cuads.append(cuadruplo(len(cuads), act, arg1, None, arg3))
 
-#TODO gosub
 def p_gosubQuad(p):
     "gosubQuad :"
     act = "gosub"
-    arg1 = p[-7]
+    arg1 = getFunctionDirById(p[-7])
     cuads.append(cuadruplo(len(cuads), act, arg1, None, None))
     global paramNum
     paramNum = 1
@@ -854,6 +853,12 @@ def getFunctionTypeById(ID):
     idx = functionNames.index(ID)
     if idx >= 0:
         return functions[idx].type
+
+def getFunctionDirById(ID):
+    functionNames = list(map(lambda x: x.id , functions))
+    idx = functionNames.index(ID)
+    if idx >= 0:
+        return functions[idx].dir
 
 def getTypeById(ID):
     localVars = list(map(lambda x: x.id ,functions[scope].varTable))
