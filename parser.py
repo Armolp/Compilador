@@ -757,7 +757,8 @@ def p_popPar(p):
 def p_subQuad(p):
     "subQuad :"
     operators.append("*")
-    operands.append(-1)
+    operands.append("-1")
+    types.append("int")
 
 def p_funcQuad(p):
     "funcQuad :"
@@ -930,6 +931,8 @@ temporalBoolVars = 0
 
 # Initialize the function list with the default functions
 functions.append(Func("const", "void", -1))
+functions[0].varTable.append(Var("-1","int", 0))
+constIntVars += 1
 functions.append(Func("global", "void", -1))
 
 # functions[1].varTable.append(Var("i", "int", -1))
@@ -956,4 +959,4 @@ printDirFunc()
 mydirFunc = DirFunc()
 mydirFunc.functions = functions
 maquina = maquinaVirtual(mydirFunc,cuads)
-maquina.run(0,"END")
+#maquina.run(0,"END")
