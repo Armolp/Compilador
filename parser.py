@@ -2,7 +2,8 @@ import ply.lex as lex
 import ply.yacc as yacc
 from dirFunc import *
 from cuadruplo import *
-from maquinaVirtual import *
+from cubo import *
+#from maquinaVirtual import *
 
 StackDebuging = False
 
@@ -12,7 +13,7 @@ tokens = [
     'LT','LET','GT','GET','EQT','NEQT',
     'EQ','SUM','SUB','MULT','DIV','MOD',
     'COMA','SEMI',
-    'INT','STRING','FLOAT','BOOL','CHAR',
+    'INT','STRING','FLOAT','CHAR',
     'ID'
 ]
 
@@ -29,6 +30,8 @@ reserved = {
     'float' : 'TYPEFLOAT',
     'bool' : 'TYPEBOOL',
     'char' : 'TYPECHAR',
+    'true' : 'BOOL',
+    'false' : 'BOOL',
     'return' : 'RETURN',
 
     'sin' : 'SINFUNC',
@@ -74,7 +77,6 @@ t_SEMI = r';'
 
 t_INT = r'\d+'
 t_FLOAT = r'[0-9]+\.[0-9]+((E|e)[+,-]?[0-9]+)?'
-t_BOOL = r'(true|false)'
 t_CHAR = r'.'
 t_STRING = r'(\'.*\' | \".*\")'
 
@@ -83,10 +85,10 @@ t_ignore = ' \t'
 def t_ID(t):
     r'[a-z](_?[a-zA-Z0-9])*'
     if t.value in reserved:
-      if(t.value == 'program'):
-        t.lexer.lineno = 0
-      t.type = reserved[t.value]
-      return t
+        if(t.value == 'program'):
+            t.lexer.lineno = 0
+        t.type = reserved[t.value]
+        return t
     t.value = str(t.value)
     #print(t)
     return t
@@ -140,8 +142,12 @@ def p_initQuad1(p):
 def p_loopQuad1(p):
     "loopQuad1 :"
     jumps.append(len(cuads))
+    act = "delete"
+    cuads.append(cuadruplo(len(cuads), act, None, None, None))
 def p_loopQuad2(p):
     "loopQuad2 :"
+    act = "update"
+    cuads.append(cuadruplo(len(cuads), act, None, None, None))
     act = "goto"
     arg3 = jumps.pop()
     cuads.append(cuadruplo(len(cuads), act, None, None, arg3))
@@ -172,7 +178,7 @@ def p_addVar(p):
 
     ID = p[-1]
     localVars = list(map(lambda x: x.id ,functions[scope].varTable))
-    globalVars = list(map(lambda x: x.id ,functions[0].varTable))
+    globalVars = list(map(lambda x: x.id ,functions[1].varTable))
     if ID in localVars or ID in globalVars:
         msg = "ERROR: "+ID+" is already defined."
         raise ValueError(msg)
@@ -185,10 +191,11 @@ def p_addVar(p):
 def p_funcion(p):
     "funcion : funcType ID addFunc LPAR func1 RPAR bloque endProcQuad"
     global scope
-    scope = 0
+    scope = 1
 def p_funcType(p):
     """funcType : TYPEVOID
                 | tipo"""
+    p[0] = p[1]
 def p_func1(p):
     """func1 : func2
             | empty"""
@@ -215,12 +222,11 @@ def p_tipo(p):
             | TYPEBOOL
             | TYPECHAR"""
     p[0] = p[1]
-
 def p_parametro(p):
     "parametro : tipo ID arr"
     ID = p[2]
     localVars = list(map(lambda x: x.id ,functions[scope].varTable))
-    globalVars = list(map(lambda x: x.id ,functions[0].varTable))
+    globalVars = list(map(lambda x: x.id ,functions[1].varTable))
     if ID in localVars or ID in globalVars:
         msg = "ERROR: "+ID+" is already defined."
         raise ValueError(msg)
@@ -267,12 +273,18 @@ def p_eqQuad(p):
 
     ID = p[-5]
     localVars = list(map(lambda x: x.id ,functions[scope].varTable))
-    globalVars = list(map(lambda x: x.id ,functions[0].varTable))
+    globalVars = list(map(lambda x: x.id ,functions[1].varTable))
     if ID in localVars or ID in globalVars:
         global tempNum
         act = "="
         arg1 = operands.pop()
+        typ1 = types.pop()
         res = ID
+        typ2 = getTypeById(ID)
+        resType = getCubeType(typ1,typ2,act)
+        if(resType == Type.ERROR):
+            msg = "ERROR: can't assign "+typ1+" to "+typ2+"."
+            raise ValueError(msg)
         cuads.append(cuadruplo(len(cuads), act, arg1, None, res))
     else:
         msg = "ERROR: "+ID+" is not defined."
@@ -293,6 +305,10 @@ def p_ifQuad1(p):
     global tempNum
     act = "gotoF"
     arg1 = operands.pop()
+    typ1 = types.pop()
+    if(typ1 != "bool"):
+        msg = "ERROR: Not a boolean expresion."
+        raise ValueError(msg)
     cuads.append(cuadruplo(len(cuads), act, arg1, None, None))
     jumps.append(len(cuads)-1)
 
@@ -364,6 +380,7 @@ def p_paramQuad(p):
     global paramNum
     act = "param"
     arg1 = operands.pop()
+    typ1 = types.pop()
     arg3 = "param"+str(paramNum)
     paramNum += 1
     cuads.append(cuadruplo(len(cuads), act, arg1, None, arg3))
@@ -381,9 +398,13 @@ def p_sinQuad(p):
     global tempNum
     act = "sin"
     arg1 = operands.pop()
+    typ1 = types.pop()
     res = "t" + str(tempNum)
+    resType = "float"
     cuads.append(cuadruplo(len(cuads), act, arg1, None, res))
+    functions[scope].varTable.append(Var( res, resType, -1))
     operands.append(res)
+    types.append(resType)
     tempNum += 1
 
 def p_cosQuad(p):
@@ -391,52 +412,70 @@ def p_cosQuad(p):
     global tempNum
     act = "cos"
     arg1 = operands.pop()
+    typ1 = types.pop()
     res = "t" + str(tempNum)
+    resType = "float"
     cuads.append(cuadruplo(len(cuads), act, arg1, None, res))
+    functions[scope].varTable.append(Var( res, resType, -1))
     operands.append(res)
+    types.append(resType)
     tempNum += 1
 
 def p_printQuad(p):
     "printQuad :"
     act = "print"
     arg1 = operands.pop()
+    typ1 = types.pop()
     cuads.append(cuadruplo(len(cuads), act, arg1, None, None))
 
 def p_pointQuad(p):
     "pointQuad :"
     act = "point"
     arg2 = operands.pop()
+    typ2 = types.pop()
     arg1 = operands.pop()
+    typ1 = types.pop()
     cuads.append(cuadruplo(len(cuads), act, arg1, arg2, None))
 
 def p_circleQuad(p):
     "circleQuad :"
     act = "circle"
     arg3 = operands.pop()   # radius
+    typ3 = types.pop()
     arg2 = operands.pop()   # y position
+    typ2 = types.pop()
     arg1 = operands.pop()   # x position
+    typ1 = types.pop()
     cuads.append(cuadruplo(len(cuads), act, arg1, arg2, arg3))
 
 def p_lineQuad(p):
     "lineQuad :"
     act = "from"
     arg2 = operands.pop()   # y position
+    typ2 = types.pop()
     arg1 = operands.pop()   # x position
+    typ1 = types.pop()
     cuads.append(cuadruplo(len(cuads), act, arg1, arg2, None))
     act = "to"
     arg2 = operands.pop()   # y position
+    typ2 = types.pop()
     arg1 = operands.pop()   # x position
+    typ1 = types.pop()
     cuads.append(cuadruplo(len(cuads), act, arg1, arg2, None))
 
 def p_rectQuad(p):
     "rectQuad :"
     act = "rect1"
     arg2 = operands.pop()   # y position
+    typ2 = types.pop()
     arg1 = operands.pop()   # x position
+    typ1 = types.pop()
     cuads.append(cuadruplo(len(cuads), act, arg1, arg2, None))
     act = "rect2"
-    arg2 = operands.pop()   # shape height
-    arg1 = operands.pop()   # shape width
+    arg2 = operands.pop()   # second y position
+    typ2 = types.pop()
+    arg1 = operands.pop()   # second x position
+    typ1 = types.pop()
     cuads.append(cuadruplo(len(cuads), act, arg1, arg2, None))
 
 # ciclo ------------------------------------------
@@ -490,10 +529,18 @@ def p_popBinExp(p):
 
             act = operators.pop()
             arg2 = operands.pop()
+            typ2 = types.pop()
             arg1 = operands.pop()
+            typ1 = types.pop()
             res = "t" + str(tempNum)
+            resType = getCubeType(typ1,typ2,act)
+            if(resType == Type.ERROR):
+                msg = "ERROR: can't use "+act+" with "+typ1+" and "+typ2+"."
+                raise ValueError(msg)
             cuads.append(cuadruplo(len(cuads),act,arg1, arg2, res))
+            functions[scope].varTable.append(Var( res, resType, -1))
             operands.append(res)
+            types.append(resType)
             tempNum += 1
 
 # expresion relacional (<,>,==) -------------------------------------
@@ -523,10 +570,18 @@ def p_popBoolExp(p):
 
             act = operators.pop()
             arg2 = operands.pop()
+            typ2 = types.pop()
             arg1 = operands.pop()
+            typ1 = types.pop()
             res = "t" + str(tempNum)
+            resType = getCubeType(typ1,typ2,act)
+            if(resType == Type.ERROR):
+                msg = "ERROR: can't use "+act+" with "+typ1+" and "+typ2+"."
+                raise ValueError(msg)
             cuads.append(cuadruplo(len(cuads),act,arg1, arg2, res))
+            functions[scope].varTable.append(Var( res, resType, -1))
             operands.append(res)
+            types.append(resType)
             tempNum += 1
 
 # expresion aritmetica (+,-) --------------------------------------
@@ -545,10 +600,18 @@ def p_popExp(p):
 
             act = operators.pop()
             arg2 = operands.pop()
+            typ2 = types.pop()
             arg1 = operands.pop()
+            typ1 = types.pop()
             res = "t" + str(tempNum)
+            resType = getCubeType(typ1,typ2,act)
+            if(resType == Type.ERROR):
+                msg = "ERROR: can't use "+act+" with "+typ1+" and "+typ2+"."
+                raise ValueError(msg)
             cuads.append(cuadruplo(len(cuads),act,arg1, arg2, res))
+            functions[scope].varTable.append(Var( res, resType, -1))
             operands.append(res)
+            types.append(resType)
             tempNum += 1
 
 
@@ -580,10 +643,18 @@ def p_popFactor(p):
 
             act = operators.pop()
             arg2 = operands.pop()
+            typ2 = types.pop()
             arg1 = operands.pop()
+            typ1 = types.pop()
             res = "t" + str(tempNum)
+            resType = getCubeType(typ1,typ2,act)
+            if(resType == Type.ERROR):
+                msg = "ERROR: can't use "+act+" with "+typ1+" and "+typ2+"."
+                raise ValueError(msg)
             cuads.append(cuadruplo(len(cuads),act,arg1, arg2, res))
+            functions[scope].varTable.append(Var( res, resType, -1))
             operands.append(res)
+            types.append(resType)
             tempNum += 1
 
 def p_opterm(p):
@@ -591,17 +662,17 @@ def p_opterm(p):
             | DIV
             | MOD"""
     operators.append(p[1])
-    #print operators
+
 # factor (ids, Const, ())---------------------------------------------
 def p_factor(p):
     "factor : opfactor fact1"
 
 def p_fact1(p):
     """fact1 : ID pushID
-             | INT pushConst
-             | FLOAT pushConst
-             | BOOL pushConst
-             | CHAR pushConst
+             | INT pushConst pushIntType
+             | FLOAT pushConst pushFloatType
+             | BOOL pushConst pushBoolType
+             | CHAR pushConst pushCharType
              | LPAR pushPar expresion RPAR popPar
              | invocacion funcQuad"""
 
@@ -611,20 +682,41 @@ def p_opfactor(p):
 
 def p_pushID(p):
     "pushID :"
+    ID = p[-1]
+
+    #IDtype = getTypeById(ID)
     localVars = list(map(lambda x: x.id ,functions[scope].varTable))
-    globalVars = list(map(lambda x: x.id ,functions[0].varTable))
-    if p[-1] in localVars or p[-1] in globalVars:
-        operands.append(p[-1])
+    globalVars = list(map(lambda x: x.id ,functions[1].varTable))
+    if ID in localVars:
+        operands.append(ID)
+        idx = localVars.index(ID)
+        types.append(functions[scope].varTable[idx].type)
+    elif ID in globalVars:
+        operands.append(ID)
+        idx = globalVars.index(ID)
+        types.append(functions[1].varTable[idx].type)
     else:
         msg = "ERROR: "+p[-1]+" is not defined."
         raise ValueError(msg)
 
 
+
 def p_pushConst(p):
     "pushConst :"
     operands.append(p[-1])
-    #types.append(type(p[-1]))
-    #print operands
+
+def p_pushIntType(p):
+    "pushIntType :"
+    types.append("int")
+def p_pushFloatType(p):
+    "pushFloatType :"
+    types.append("float")
+def p_pushBoolType(p):
+    "pushBoolType :"
+    types.append("bool")
+def p_pushCharType(p):
+    "pushCharType :"
+    types.append("char")
 
 def p_pushPar(p):
     "pushPar :"
@@ -643,14 +735,22 @@ def p_subQuad(p):
 
 def p_funcQuad(p):
     "funcQuad :"
+    ID = p[-1]
     # if the function has no name then it is a reserved function
-    if (p[-1] != None):
+    if (ID != None):
         global tempNum
         act = "="
-        arg1 = p[-1]
+        arg1 = ID
         res = "t" + str(tempNum)
+        resType = getFunctionTypeById(ID)
+        print(ID,resType)
+        if(resType == "void"):
+            msg = "ERROR: "+ID+" Function has no return value."
+            raise ValueError(msg)
         cuads.append(cuadruplo(len(cuads), act, arg1, None, res))
+        functions[scope].varTable.append(Var( res, resType, -1))
         operands.append(res)
+        types.append(resType)
         tempNum += 1
 
 # empty rule -----------------------------------------------------------
@@ -674,7 +774,22 @@ def readFile(file):
     parser.parse(data)
 
 
+def getFunctionTypeById(ID):
+    functionNames = list(map(lambda x: x.id , functions))
+    idx = functionNames.index(ID)
+    if idx >= 0:
+        return functions[idx].type
 
+def getTypeById(ID):
+    localVars = list(map(lambda x: x.id ,functions[scope].varTable))
+    globalVars = list(map(lambda x: x.id ,functions[1].varTable))
+    if ID in localVars:
+        idx = localVars.index(ID)
+        return functions[scope].varTable[idx].type
+    elif ID in globalVars:
+        idx = globalVars.index(ID)
+        return functions[1].varTable[idx].type
+    return False
 
 #list of functions that holds Func objects
 functions = []
@@ -683,7 +798,7 @@ cuads = []
 # temporal directions counter
 tempNum = 1
 # current scope start in global scope
-scope = 0
+scope = 1
 # stacks
 jumps = []
 operators = []
@@ -691,11 +806,12 @@ operands = []
 types = []
 
 # Initialize the function list with the default functions
+functions.append(Func("const", "void", -1))
 functions.append(Func("global", "void", -1))
 
-# functions[0].varTable.append(Var("i", "int", -1))
-# functions[0].varTable.append(Var("j", "int", -1))
-# functions[0].varTable.append(Var("k", "int", -1))
+# functions[1].varTable.append(Var("i", "int", -1))
+# functions[1].varTable.append(Var("j", "int", -1))
+# functions[1].varTable.append(Var("k", "int", -1))
 
 readFile("testing\codigoPrueba.txt")
 
@@ -710,6 +826,8 @@ def printDirFunc():
     print ("\nQuadruplos:")
     for i in range(0, len(cuads)):
         print(str(cuads[i]))
+
+    print (types)
 
 
 #maquina = maquinaVirtual(functions,cuads)

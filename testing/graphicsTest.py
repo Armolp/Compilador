@@ -30,5 +30,7 @@ while True:
     c.create_oval(x-1, y-1, x+1, y+1, fill='black')
     c.create_line(150,150,x,y)
 
+    print( a)
+
     time.sleep(0.01)
     tk.update()

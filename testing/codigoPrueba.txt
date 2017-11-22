@@ -1,17 +1,16 @@
 int prueba;
 float x,y,z;
 
-void mojoyd( int i , char c) {
+void func1 ( int i , float c) {
 	int j;
 	c = i * prueba;
 }
 
 init{
-	x = mojoyd(0);
 	print(x);
 }
 
 loop {
-	int j;
+	bool j;
 	drawLine(0,0,100,100);
 }
