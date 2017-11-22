@@ -770,7 +770,7 @@ def p_funcQuad(p):
     if (ID != None):
         global tempNum
         act = "="
-        arg1 = ID
+        arg1 = getFunctionById(ID).globDir
         res = "t" + str(tempNum)
         resType = getFunctionTypeById(ID)
         if(resType == "void"):
