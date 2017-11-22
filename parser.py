@@ -33,6 +33,7 @@ reserved = {
     'true' : 'BOOL',
     'false' : 'BOOL',
     'return' : 'RETURN',
+    'func' : 'FUNC',
 
     'sin' : 'SINFUNC',
     'cos' : 'COSFUNC',
@@ -189,7 +190,7 @@ def p_addVar(p):
 
 # funcion --------------------------------------------------
 def p_funcion(p):
-    "funcion : funcType ID addFunc LPAR func1 RPAR bloque endProcQuad"
+    "funcion : FUNC funcType ID addFunc LPAR func1 RPAR bloque endProcQuad"
     global scope
     scope = 1
 def p_funcType(p):

@@ -1,7 +1,7 @@
 int prueba;
 float x,y,z;
 
-void func1 ( int i , float c) {
+func int func1 ( int i , float c) {
 	int j;
 	c = i * prueba;
 }
