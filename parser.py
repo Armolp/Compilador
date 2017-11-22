@@ -309,7 +309,7 @@ def p_ifQuad1(p):
 
     global tempNum
     act = "gotoF"
-    arg1 = operands.pop()
+    arg1 = getDirById(operands.pop())
     typ1 = types.pop()
     if(typ1 != "bool"):
         msg = "ERROR: Not a boolean expresion."
@@ -958,4 +958,4 @@ printDirFunc()
 mydirFunc = DirFunc()
 mydirFunc.functions = functions
 maquina = maquinaVirtual(mydirFunc,cuads)
-maquina.run(0,"END")
+#maquina.run(0,"END")
