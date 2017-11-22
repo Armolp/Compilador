@@ -157,28 +157,40 @@ class maquinaVirtual():
 
     def vaciarParametros(self,memoria):
         self.parametros.reverse()
+        contInt = 0
+        contFloat = 0
+        contBool = 0
+        contChar = 0
         while self.parametros:
             var = self.parametros.pop()
             valor = var.value
             tipo = var.type
             if tipo == 'int':
-                dir = 2000 + len(memoria.memLocal.varInt)
+                dir = 2000 + contInt
+                contInt+=1
             elif tipo == 'float':
-                dir = 3000 + len(memoria.memLocal.varFloat)
+                dir = 3000 + contFloat
+                contFloat+=1
             elif tipo == 'bool':
-                dir = 4000 + len(memoria.memLocal.varBool)
+                dir = 4000 + contBool
+                contBool+=1
             elif tipo == 'char':
-                dir = 5000 + len(memoria.memLocal.varChar)
+                dir = 5000 + contChar
+                contChar+=1
             memoria.setValue(valor,dir)
 
     def run(self,begin,end):
         memoria = memoriaVirtual()
-        memoria = self.memVirtual
+        memoria.memConst = self.memVirtual.memConst
+        memoria.memGlobal = self.memVirtual.memGlobal
+        for i in range(2,len(self.fd.functions)):
+            memoria.setFunctionValues(self.fd.functions[i])
+        #memoria.printMemoria()
         self.vaciarParametros(memoria)
         self.cuadActual = begin
         while self.cuadruplos[self.cuadActual].accion != end:
             cuadruplo = self.cuadruplos[self.cuadActual]
-            print(cuadruplo)
+            #print(cuadruplo)
             accion = cuadruplo.accion
             if accion == 'goto':
                 self.goto(cuadruplo)
@@ -224,7 +236,8 @@ class maquinaVirtual():
                 print(cuadruplo)
 
             self.cuadActual = self.cuadActual + 1
-        memoria.printMemoria()
+        #memoria.printMemoria()
+        #self.memVirtual.printMemoria()
         self.memVirtual.memConst = memoria.memConst
         self.memVirtual.memGlobal = memoria.memGlobal
 

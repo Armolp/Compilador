@@ -1,20 +1,59 @@
+int r,r2,i;
 
-func void foo(int x, int y, int r){
-	int rr;
-	print(x);
-	rr = r/2;
-	if(r > 4){
-		drawCircle(x,y,r);
-		foo(x-r, y, rr);
-		foo(x+r, y, rr);
+func int fibonacci(int x){
+	if(x == 0){
+	    return 0;
 	}
+	else{
+	    if(x==1){
+	        return 1;
+	   }
+	   else{
+	     return fibonacci(x-1) + fibonacci(x-2);
+	   }
+	}
+
+}
+
+func int fibIter(int x){
+    int res,cont,aux,anterior;
+    res = 0;
+    cont = 0;
+    anterior = 0;
+    aux = 0;
+
+    while(cont < x){
+        if(cont+1 == 0){
+	    res = 0;
+        }
+        else{
+            if(cont+1==1){
+                res = 1;
+           }else{
+                aux = res;
+                res = res + anterior;
+                anterior = aux;
+           }
+        }
+        cont = cont + 1;
+     }
+    return res;
 }
 
 init{
+    r=0;
+    i=0;
+    r2 = 0;
 
 }
 
 
 loop {
-	foo(250,250,64);
+        r2 = fibIter(i);
+        r = fibonacci(i);
+        print(r);
+        print(r2);
+        i = i + 1;
+        drawCircle(250,150,r2*0.1);
+        drawCircle(250,350,r2*0.05);
 }
