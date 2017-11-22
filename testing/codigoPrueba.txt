@@ -1,15 +1,17 @@
 int prueba;
 float x,y,z;
 
-void mojoyd( int i , char c ) {
-	n = i * prueba;
+void mojoyd( int i , char c) {
+	int j;
+	c = i * prueba;
 }
 
 init{
-	x = sin2(0);
+	x = mojoyd(0);
 	print(x);
 }
 
 loop {
-
+	int j;
+	drawLine(0,0,100,100);
 }

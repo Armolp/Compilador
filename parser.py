@@ -147,11 +147,12 @@ def p_loopQuad2(p):
     cuads.append(cuadruplo(len(cuads), act, None, None, arg3))
 
 # variable (int x = 0;) -----------------------------------------
-def p_variable(p):
-    "variable : tipo var SEMI"
-def p_var(p):
-    "var : ID arr addVar var2"
 
+currentVarType = None
+def p_variable(p):
+    "variable : tipo setCurrType var SEMI"
+def p_var(p):
+    "var : ID addVar arr var2"
 def p_var2(p):
     """var2 : COMA var
             | empty"""
@@ -161,9 +162,25 @@ def p_arr(p):
        arr2 : LBRACKET INT RBRACKET
             | empty"""
 
+def p_setCurrType(p):
+    "setCurrType :"
+    global currentVarType
+    currentVarType = p[-1]
+
 def p_addVar(p):
     "addVar :"
-    functions[scope].varTable.append(Var( p[-2], None, -1))
+
+    ID = p[-1]
+    localVars = list(map(lambda x: x.id ,functions[scope].varTable))
+    globalVars = list(map(lambda x: x.id ,functions[0].varTable))
+    if ID in localVars or ID in globalVars:
+        msg = "ERROR: "+ID+" is already defined."
+        raise ValueError(msg)
+    else:
+        global currentVarType
+        functions[scope].varTable.append(Var( ID, currentVarType, -1))
+
+
 # funcion --------------------------------------------------
 def p_funcion(p):
     "funcion : funcType ID addFunc LPAR func1 RPAR bloque endProcQuad"
@@ -201,7 +218,15 @@ def p_tipo(p):
 
 def p_parametro(p):
     "parametro : tipo ID arr"
-    functions[scope].varTable.append(Var(p[2], p[1], -1))
+    ID = p[2]
+    localVars = list(map(lambda x: x.id ,functions[scope].varTable))
+    globalVars = list(map(lambda x: x.id ,functions[0].varTable))
+    if ID in localVars or ID in globalVars:
+        msg = "ERROR: "+ID+" is already defined."
+        raise ValueError(msg)
+    else:
+        global currentVarType
+        functions[scope].varTable.append(Var( ID, p[1], -1))
 
 # bloque -------------------------------------------------
 def p_bloque(p):
@@ -240,12 +265,18 @@ def p_eqQuad(p):
         print (operators)
         print (operands)
 
-    global tempNum
-    act = "="
-    arg1 = operands.pop()
-    res = p[-5]
-    cuads.append(cuadruplo(len(cuads), act, arg1, None, res))
-    #operands.append(res)
+    ID = p[-5]
+    localVars = list(map(lambda x: x.id ,functions[scope].varTable))
+    globalVars = list(map(lambda x: x.id ,functions[0].varTable))
+    if ID in localVars or ID in globalVars:
+        global tempNum
+        act = "="
+        arg1 = operands.pop()
+        res = ID
+        cuads.append(cuadruplo(len(cuads), act, arg1, None, res))
+    else:
+        msg = "ERROR: "+ID+" is not defined."
+        raise ValueError(msg)
 
 # condicion --------------------------------------
 def p_condicion(p):
@@ -314,11 +345,19 @@ paramNum = 1
 
 def p_eraQuad(p):
     "eraQuad :"
-    act = "era"
-    arg1 = p[-1]
-    cuads.append(cuadruplo(len(cuads), act, arg1, None, None))
-    global paramNum
-    paramNum = 1
+
+    ID = p[-1]
+    funcs = list(map(lambda x: x.id ,functions))
+    if ID in funcs:
+        act = "era"
+        arg1 = p[-1]
+        cuads.append(cuadruplo(len(cuads), act, arg1, None, None))
+        global paramNum
+        paramNum = 1
+    else:
+        msg = "ERROR: "+ID+" is not defined."
+        raise ValueError(msg)
+
 
 def p_paramQuad(p):
     "paramQuad :"
