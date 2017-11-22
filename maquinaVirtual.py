@@ -1,37 +1,58 @@
-from dirFunc import *
-from cuadruplo import *
-from cubo import *
-from memoriaVirtual import *
+from Compilador.cuadruplo import *
+from Compilador.dirFunc import *
+from Compilador.memoriaVirtual import *
 
-var1 =Var('1','int', 0)
-var2 =Var('5','int', 1)
-var3 =Var('true',bool, 400)
-var4 =Var(.5,'float', 200)
-var5 =Var('c','char', 600)
-var6 =Var('a','char', 601)
+var1 =Var(0,'int', 0)
+var2 =Var(3,'int', 1)
+var3 =Var(1,'int', 2)
+var4 =Var('x','int', 2000)
+var5 =Var('y','int', 2000)
+var6 =Var('func','int', 1000)
 
-func = Func('cons','constante',0)
-func.varTable.append(var1)
-func.varTable.append(var2)
-func.varTable.append(var3)
-func.varTable.append(var4)
-func.varTable.append(var5)
-func.varTable.append(var6)
+func1 = Func('const','constante',0)
+func1.varTable.append(var1)
+func1.varTable.append(var2)
+func1.varTable.append(var3)
+
+func2 = Func('glob','global',1)
+func2.varTable.append(var6)
+
+func3 = Func('loc','local',2)
+func3.varTable.append(var4)
+func3.varTable.append(var5)
+
+dir = DirFunc()
+dir.functions.append(func1)
+dir.functions.append(func2)
+dir.functions.append(func3)
 
 cuads =[]
 
-cuads.append(cuadruplo(len(cuads),'goto','none', 'none', 4))
-cuads.append(cuadruplo(len(cuads),'=',0, 'none', 2000))
-cuads.append(cuadruplo(len(cuads),'return',2000, 'none','none'))
+cuads.append(cuadruplo(len(cuads),'goto','none', 'none', 13))
+cuads.append(cuadruplo(len(cuads),'==',2000, 0, 8000))
+cuads.append(cuadruplo(len(cuads),'gotoF',8000, 'none',5))
+cuads.append(cuadruplo(len(cuads),'return',0, 'none', 'none'))
+cuads.append(cuadruplo(len(cuads),'goto','none', 'none', 12))
+cuads.append(cuadruplo(len(cuads),'era',1000, 'none', 'none'))
+cuads.append(cuadruplo(len(cuads),'-',2000, 2, 6000))
+cuads.append(cuadruplo(len(cuads),'param',6000, 'none', 'none'))
+cuads.append(cuadruplo(len(cuads),'gosub',1, 'none', 'none'))
+cuads.append(cuadruplo(len(cuads),'=',1000, 'none', 6001))
+cuads.append(cuadruplo(len(cuads),'+',2000, 6001, 6002))
+cuads.append(cuadruplo(len(cuads),'return',6002, 'none', 'none'))
 cuads.append(cuadruplo(len(cuads),'EndProc','none', 'none', 'none'))
 cuads.append(cuadruplo(len(cuads),'era',1000, 'none', 'none'))
-cuads.append(cuadruplo(len(cuads),'param',1, 'none', 'param1'))
+cuads.append(cuadruplo(len(cuads),'param',1,'none', 'none'))
 cuads.append(cuadruplo(len(cuads),'gosub',1, 'none', 'none'))
-cuads.append(cuadruplo(len(cuads),'+',1, 1, 1001))
+cuads.append(cuadruplo(len(cuads),'=',1000, 'none', 6000))
+cuads.append(cuadruplo(len(cuads),'=',6000, 'none', 2000))
+cuads.append(cuadruplo(len(cuads),'print',2000, 'none', 'none'))
 cuads.append(cuadruplo(len(cuads),'END','none', 'none', 'none'))
 
-dir = DirFunc()
-dir.functions.append(func)
+class parametros():
+    def __init__(self,value,type):
+        self.value = value
+        self.type = type
 
 class maquinaVirtual():
 
@@ -42,7 +63,8 @@ class maquinaVirtual():
         self.returnDir = []
         self.cuadReturn = []
         self.memVirtual = memoriaVirtual()
-        self.memVirtual.setFunctionValues(self.fd.functions[0])
+        for i in range(0,len(self.fd.functions)):
+            self.memVirtual.setFunctionValues(self.fd.functions[i])
         self.parametros = []
     def goto(self,cuad):
         self.cuadActual = cuad.arg3-1
@@ -60,7 +82,10 @@ class maquinaVirtual():
         self.run(begin,'EndProc')
         self.cuadActual = self.cuadReturn.pop()
     def param(self,cuad,memoria):
-        self.parametros.append(cuad.arg1)
+        valor = memoria.getValue(cuad.arg1)
+        tipo = memoria.getType(cuad.arg1)
+        parametro = parametros(valor,tipo)
+        self.parametros.append(parametro)
     def ret(self,cuad,memoria):
         value = memoria.getValue(cuad.arg1)
         dir = self.returnDir.pop()
@@ -99,7 +124,7 @@ class maquinaVirtual():
         arg2 = memoria.getValue(cuad.arg2)
         arg3 = cuad.arg3
         accion = cuad.accion
-        arg1 = memoria.fixTypeType(cuad.arg1, arg1)
+        arg1 = memoria.fixType(cuad.arg1, arg1)
         arg2 = memoria.fixType(cuad.arg2, arg2)
 
         if accion == 'AND':
@@ -129,8 +154,8 @@ class maquinaVirtual():
         self.parametros.reverse()
         while self.parametros:
             var = self.parametros.pop()
-            valor = memoria.getValue(var)
-            tipo = memoria.getType(var)
+            valor = var.value
+            tipo = var.type
             if tipo == 'int':
                 dir = 2000 + len(memoria.memLocal.varInt)
             elif tipo == 'float':
@@ -140,14 +165,19 @@ class maquinaVirtual():
             elif tipo == 'char':
                 dir = 5000 + len(memoria.memLocal.varChar)
             memoria.setValue(valor,dir)
+    def printVar(self,cuad,memoria):
+        value = memoria.getValue(cuad.arg1)
+        print(value)
     def run(self,begin,end):
-        memoria = self.memVirtual
+        memoria = memoriaVirtual()
+        memoria.memGlobal = self.memVirtual.memGlobal
+        memoria.memConst = self.memVirtual.memConst
         self.vaciarParametros(memoria)
         self.cuadActual = begin
         while self.cuadruplos[self.cuadActual].accion != end:
             cuadruplo = self.cuadruplos[self.cuadActual]
             accion = cuadruplo.accion
-            print('do: ' + str(self.cuadruplos[self.cuadActual]))
+            #print('do: ' + str(self.cuadruplos[self.cuadActual]))
             if accion == 'goto':
                 self.goto(cuadruplo)
             elif accion == 'gotoF':
@@ -172,19 +202,22 @@ class maquinaVirtual():
                 self.opLogic(cuadruplo,memoria)
             elif accion == '=':
                 self.asign(cuadruplo,memoria)
+            elif accion == 'print':
+                self.printVar(cuadruplo,memoria)
+
             else:
-                print('not implemented yet')
+                print('ERROR, cuadruplo no acceptado: ')
+                print(cuadruplo)
 
             self.cuadActual = self.cuadActual + 1
         self.memVirtual.memConst = memoria.memConst
         self.memVirtual.memGlobal = memoria.memGlobal
 
-
-
-
 maquina = maquinaVirtual(dir,cuads)
 maquina.run(0,'END')
-maquina.memVirtual.printMemoria()
+#maquina.memVirtual.printMemoria()
+
+
 
 
 

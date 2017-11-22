@@ -104,8 +104,12 @@ class memoriaVirtual():
             self.memTemporal.setValue(value,dir)
 
     def setFunctionValues(self,func):
-        for i in range(0, len(func.varTable)):
-            self.setValue(func.varTable[i].id, func.varTable[i].dir)
+        if func.id != 'const':
+            for i in range(0, len(func.varTable)):
+                self.setValue(None, func.varTable[i].dir)
+        else:
+            for i in range(0, len(func.varTable)):
+                self.setValue(func.varTable[i].id, func.varTable[i].dir)
 
 
 class memoriaFuncion():
