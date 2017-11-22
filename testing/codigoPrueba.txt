@@ -1,16 +1,31 @@
 int prueba;
-float x,y,z;
+float x,y;
 
-func int func1 ( int i , float c) {
+func int func1 ( int i ) {
 	int j;
-	c = i * prueba;
+	float f1;
+	bool b1;
+	char c;
+	f1 = i * prueba;
+	x = 0;
+}
+
+func int func2 ( int i ) {
+	int j;
+	float f1;
+	bool b1;
+	char c;
+	f1 = i + prueba;
 }
 
 init{
 	print(x);
+	x = 0;
 }
 
 loop {
 	bool j;
-	drawLine(0,0,100,100);
+	j = true;
+	x = x+1;
+	drawLine(x+0,0,100,100);
 }

@@ -3,7 +3,7 @@ import ply.yacc as yacc
 from dirFunc import *
 from cuadruplo import *
 from cubo import *
-#from maquinaVirtual import *
+from maquinaVirtual import *
 
 StackDebuging = False
 
@@ -176,6 +176,7 @@ def p_setCurrType(p):
 
 def p_addVar(p):
     "addVar :"
+    global scope
 
     ID = p[-1]
     localVars = list(map(lambda x: x.id ,functions[scope].varTable))
@@ -185,7 +186,8 @@ def p_addVar(p):
         raise ValueError(msg)
     else:
         global currentVarType
-        functions[scope].varTable.append(Var( ID, currentVarType, -1))
+        newDir = getDir(currentVarType)
+        functions[scope].varTable.append(Var( ID, currentVarType, newDir))
 
 
 # funcion --------------------------------------------------
@@ -193,6 +195,7 @@ def p_funcion(p):
     "funcion : FUNC funcType ID addFunc LPAR func1 RPAR bloque endProcQuad"
     global scope
     scope = 1
+    resetVarCounters()
 def p_funcType(p):
     """funcType : TYPEVOID
                 | tipo"""
@@ -233,7 +236,8 @@ def p_parametro(p):
         raise ValueError(msg)
     else:
         global currentVarType
-        functions[scope].varTable.append(Var( ID, p[1], -1))
+        newDir = getDir(p[1])
+        functions[scope].varTable.append(Var( ID, p[1], newDir))
 
 # bloque -------------------------------------------------
 def p_bloque(p):
@@ -258,7 +262,7 @@ def p_return(p):
 def p_returnQuad(p):
     "returnQuad :"
     act = "return"
-    arg1 = operands.pop()
+    arg1 = getDirById(operands.pop())
     cuads.append(cuadruplo(len(cuads), act, arg1, None, None))
 
 
@@ -278,9 +282,9 @@ def p_eqQuad(p):
     if ID in localVars or ID in globalVars:
         global tempNum
         act = "="
-        arg1 = operands.pop()
+        arg1 = getDirById(operands.pop())
         typ1 = types.pop()
-        res = ID
+        res = getDirById(ID)
         typ2 = getTypeById(ID)
         resType = getCubeType(typ1,typ2,act)
         if(resType == Type.ERROR):
@@ -380,12 +384,13 @@ def p_paramQuad(p):
     "paramQuad :"
     global paramNum
     act = "param"
-    arg1 = operands.pop()
+    arg1 = getDirById(operands.pop())
     typ1 = types.pop()
     arg3 = "param"+str(paramNum)
     paramNum += 1
     cuads.append(cuadruplo(len(cuads), act, arg1, None, arg3))
 
+#TODO gosub
 def p_gosubQuad(p):
     "gosubQuad :"
     act = "gosub"
@@ -398,12 +403,13 @@ def p_sinQuad(p):
     "sinQuad :"
     global tempNum
     act = "sin"
-    arg1 = operands.pop()
+    arg1 = getDirById(operands.pop())
     typ1 = types.pop()
     res = "t" + str(tempNum)
     resType = "float"
-    cuads.append(cuadruplo(len(cuads), act, arg1, None, res))
-    functions[scope].varTable.append(Var( res, resType, -1))
+    newDir = getTemporalDir(resType)
+    functions[scope].varTable.append(Var( res, resType, newDir))
+    cuads.append(cuadruplo(len(cuads), act, arg1, None, newDir))
     operands.append(res)
     types.append(resType)
     tempNum += 1
@@ -412,12 +418,13 @@ def p_cosQuad(p):
     "cosQuad :"
     global tempNum
     act = "cos"
-    arg1 = operands.pop()
+    arg1 = getDirById(operands.pop())
     typ1 = types.pop()
     res = "t" + str(tempNum)
     resType = "float"
-    cuads.append(cuadruplo(len(cuads), act, arg1, None, res))
-    functions[scope].varTable.append(Var( res, resType, -1))
+    newDir = getTemporalDir(resType)
+    functions[scope].varTable.append(Var( res, resType, newDir))
+    cuads.append(cuadruplo(len(cuads), act, arg1, None, newDir))
     operands.append(res)
     types.append(resType)
     tempNum += 1
@@ -425,57 +432,57 @@ def p_cosQuad(p):
 def p_printQuad(p):
     "printQuad :"
     act = "print"
-    arg1 = operands.pop()
+    arg1 = getDirById(operands.pop())
     typ1 = types.pop()
     cuads.append(cuadruplo(len(cuads), act, arg1, None, None))
 
 def p_pointQuad(p):
     "pointQuad :"
     act = "point"
-    arg2 = operands.pop()
+    arg2 = getDirById(operands.pop())
     typ2 = types.pop()
-    arg1 = operands.pop()
+    arg1 = getDirById(operands.pop())
     typ1 = types.pop()
     cuads.append(cuadruplo(len(cuads), act, arg1, arg2, None))
 
 def p_circleQuad(p):
     "circleQuad :"
     act = "circle"
-    arg3 = operands.pop()   # radius
+    arg3 = getDirById(operands.pop())   # radius
     typ3 = types.pop()
-    arg2 = operands.pop()   # y position
+    arg2 = getDirById(operands.pop())   # y position
     typ2 = types.pop()
-    arg1 = operands.pop()   # x position
+    arg1 = getDirById(operands.pop())   # x position
     typ1 = types.pop()
     cuads.append(cuadruplo(len(cuads), act, arg1, arg2, arg3))
 
 def p_lineQuad(p):
     "lineQuad :"
     act = "from"
-    arg2 = operands.pop()   # y position
+    arg2 = getDirById(operands.pop())   # y position
     typ2 = types.pop()
-    arg1 = operands.pop()   # x position
+    arg1 = getDirById(operands.pop())   # x position
     typ1 = types.pop()
     cuads.append(cuadruplo(len(cuads), act, arg1, arg2, None))
     act = "to"
-    arg2 = operands.pop()   # y position
+    arg2 = getDirById(operands.pop())   # y position
     typ2 = types.pop()
-    arg1 = operands.pop()   # x position
+    arg1 = getDirById(operands.pop())   # x position
     typ1 = types.pop()
     cuads.append(cuadruplo(len(cuads), act, arg1, arg2, None))
 
 def p_rectQuad(p):
     "rectQuad :"
     act = "rect1"
-    arg2 = operands.pop()   # y position
+    arg2 = getDirById(operands.pop())   # y position
     typ2 = types.pop()
-    arg1 = operands.pop()   # x position
+    arg1 = getDirById(operands.pop())   # x position
     typ1 = types.pop()
     cuads.append(cuadruplo(len(cuads), act, arg1, arg2, None))
     act = "rect2"
-    arg2 = operands.pop()   # second y position
+    arg2 = getDirById(operands.pop())   # second y position
     typ2 = types.pop()
-    arg1 = operands.pop()   # second x position
+    arg1 = getDirById(operands.pop())   # second x position
     typ1 = types.pop()
     cuads.append(cuadruplo(len(cuads), act, arg1, arg2, None))
 
@@ -493,15 +500,15 @@ def p_whileQuad1(p):
 def p_whileQuad2(p):
     "whileQuad2 :"
     act = "gotoF"
-    arg1 = operands.pop()
+    arg1 = getDirById(operands.pop())
     jumps.append(len(cuads))
-    cuads.append(cuadruplo(len(cuads),act,arg1,None,None))
+    cuads.append(cuadruplo(len(cuads),act, arg1, None, None))
 def p_whileQuad3(p):
     "whileQuad3 :"
     act = "goto"
     idx = jumps.pop()
     arg3 = jumps.pop()
-    cuads.append(cuadruplo(len(cuads),act,None,None,arg3))
+    cuads.append(cuadruplo(len(cuads),act, None, None, arg3))
     cuads[idx].arg3 = len(cuads)
 
 
@@ -529,17 +536,18 @@ def p_popBinExp(p):
                 print (operands)
 
             act = operators.pop()
-            arg2 = operands.pop()
+            arg2 = getDirById(operands.pop())
             typ2 = types.pop()
-            arg1 = operands.pop()
+            arg1 = getDirById(operands.pop())
             typ1 = types.pop()
             res = "t" + str(tempNum)
             resType = getCubeType(typ1,typ2,act)
             if(resType == Type.ERROR):
                 msg = "ERROR: can't use "+act+" with "+typ1+" and "+typ2+"."
                 raise ValueError(msg)
-            cuads.append(cuadruplo(len(cuads),act,arg1, arg2, res))
-            functions[scope].varTable.append(Var( res, resType, -1))
+            newDir = getTemporalDir(resType)
+            functions[scope].varTable.append(Var( res, resType, newDir))
+            cuads.append(cuadruplo(len(cuads),act,arg1, arg2, newDir))
             operands.append(res)
             types.append(resType)
             tempNum += 1
@@ -570,17 +578,18 @@ def p_popBoolExp(p):
                 print (operands)
 
             act = operators.pop()
-            arg2 = operands.pop()
+            arg2 = getDirById(operands.pop())
             typ2 = types.pop()
-            arg1 = operands.pop()
+            arg1 = getDirById(operands.pop())
             typ1 = types.pop()
             res = "t" + str(tempNum)
             resType = getCubeType(typ1,typ2,act)
             if(resType == Type.ERROR):
                 msg = "ERROR: can't use "+act+" with "+typ1+" and "+typ2+"."
                 raise ValueError(msg)
-            cuads.append(cuadruplo(len(cuads),act,arg1, arg2, res))
-            functions[scope].varTable.append(Var( res, resType, -1))
+            newDir = getTemporalDir(resType)
+            functions[scope].varTable.append(Var( res, resType, newDir))
+            cuads.append(cuadruplo(len(cuads),act,arg1, arg2, newDir))
             operands.append(res)
             types.append(resType)
             tempNum += 1
@@ -600,17 +609,18 @@ def p_popExp(p):
                 print (operands)
 
             act = operators.pop()
-            arg2 = operands.pop()
+            arg2 = getDirById(operands.pop())
             typ2 = types.pop()
-            arg1 = operands.pop()
+            arg1 = getDirById(operands.pop())
             typ1 = types.pop()
             res = "t" + str(tempNum)
             resType = getCubeType(typ1,typ2,act)
             if(resType == Type.ERROR):
                 msg = "ERROR: can't use "+act+" with "+typ1+" and "+typ2+"."
                 raise ValueError(msg)
-            cuads.append(cuadruplo(len(cuads),act,arg1, arg2, res))
-            functions[scope].varTable.append(Var( res, resType, -1))
+            newDir = getTemporalDir(resType)
+            functions[scope].varTable.append(Var( res, resType, newDir))
+            cuads.append(cuadruplo(len(cuads),act,arg1, arg2, newDir))
             operands.append(res)
             types.append(resType)
             tempNum += 1
@@ -643,17 +653,18 @@ def p_popFactor(p):
                 print (operands)
 
             act = operators.pop()
-            arg2 = operands.pop()
+            arg2 = getDirById(operands.pop())
             typ2 = types.pop()
-            arg1 = operands.pop()
+            arg1 = getDirById(operands.pop())
             typ1 = types.pop()
             res = "t" + str(tempNum)
             resType = getCubeType(typ1,typ2,act)
             if(resType == Type.ERROR):
                 msg = "ERROR: can't use "+act+" with "+typ1+" and "+typ2+"."
                 raise ValueError(msg)
-            cuads.append(cuadruplo(len(cuads),act,arg1, arg2, res))
-            functions[scope].varTable.append(Var( res, resType, -1))
+            newDir = getTemporalDir(resType)
+            functions[scope].varTable.append(Var( res, resType, newDir))
+            cuads.append(cuadruplo(len(cuads), act, arg1, arg2, newDir))
             operands.append(res)
             types.append(resType)
             tempNum += 1
@@ -670,10 +681,10 @@ def p_factor(p):
 
 def p_fact1(p):
     """fact1 : ID pushID
-             | INT pushConst pushIntType
-             | FLOAT pushConst pushFloatType
-             | BOOL pushConst pushBoolType
-             | CHAR pushConst pushCharType
+             | INT pushIntType
+             | FLOAT pushFloatType
+             | BOOL pushBoolType
+             | CHAR pushCharType
              | LPAR pushPar expresion RPAR popPar
              | invocacion funcQuad"""
 
@@ -700,24 +711,37 @@ def p_pushID(p):
         msg = "ERROR: "+p[-1]+" is not defined."
         raise ValueError(msg)
 
-
-
-def p_pushConst(p):
-    "pushConst :"
-    operands.append(p[-1])
-
 def p_pushIntType(p):
     "pushIntType :"
     types.append("int")
+    operands.append(p[-1])
+    global constIntVars
+    functions[0].varTable.append(Var(p[-1], "int", 0+constIntVars))
+    constIntVars += 1
+
 def p_pushFloatType(p):
     "pushFloatType :"
     types.append("float")
+    operands.append(p[-1])
+    global constFloatVars
+    functions[0].varTable.append(Var(p[-1], "float", 200+constFloatVars))
+    constFloatVars += 1
+
 def p_pushBoolType(p):
     "pushBoolType :"
     types.append("bool")
+    operands.append(p[-1])
+    global constBoolVars
+    functions[0].varTable.append(Var(p[-1], "bool", 400+constBoolVars))
+    constBoolVars += 1
+
 def p_pushCharType(p):
     "pushCharType :"
     types.append("char")
+    operands.append(p[-1])
+    global constCharVars
+    functions[0].varTable.append(Var(p[-1], "char", 600+constCharVars))
+    constCharVars += 1
 
 def p_pushPar(p):
     "pushPar :"
@@ -749,7 +773,8 @@ def p_funcQuad(p):
             msg = "ERROR: "+ID+" Function has no return value."
             raise ValueError(msg)
         cuads.append(cuadruplo(len(cuads), act, arg1, None, res))
-        functions[scope].varTable.append(Var( res, resType, -1))
+        newDir = getTemporalDir(resType)
+        functions[scope].varTable.append(Var( res, resType, newDir))
         operands.append(res)
         types.append(resType)
         tempNum += 1
@@ -774,6 +799,54 @@ def readFile(file):
     file_in.close()
     parser.parse(data)
 
+def getDir(varType):
+    global scope
+    if(scope == 1):
+        global globalIntVars,globalFloatVars,globalBoolVars,globalCharVars
+        if(varType == 'int'):
+            newDir = 1000 + globalIntVars
+            globalIntVars += 1
+        elif(varType == 'float'):
+            newDir = 1200 + globalFloatVars
+            globalFloatVars += 1
+        elif(varType == 'bool'):
+            newDir = 1400 + globalBoolVars
+            globalBoolVars += 1
+        elif(varType == 'char'):
+            newDir = 1600 + globalCharVars
+            globalCharVars += 1
+    else:
+        global localIntVars,localFloatVars,localBoolVars,localCharVars
+        if(varType == 'int'):
+            newDir = 2000 + localIntVars
+            localIntVars += 1
+        elif(varType == 'float'):
+            newDir = 2200 + localFloatVars
+            localFloatVars += 1
+        elif(varType == 'bool'):
+            newDir = 2400 + localBoolVars
+            localBoolVars += 1
+        elif(varType == 'char'):
+            newDir = 2600 + localCharVars
+            localCharVars += 1
+    return newDir
+
+def getTemporalDir(varType):
+    newDir = 0
+    global temporalIntVars,temporalFloatVars,temporalBoolVars,temporalCharVars
+    if(varType == 'int'):
+        newDir = 5000 + temporalIntVars
+        temporalIntVars += 1
+    elif(varType == 'float'):
+        newDir = 6000 + temporalFloatVars
+        temporalFloatVars += 1
+    elif(varType == 'bool'):
+        newDir = 7000 + temporalBoolVars
+        temporalBoolVars += 1
+    elif(varType == 'char'):
+        newDir = 8000 + temporalCharVars
+        temporalCharVars += 1
+    return newDir
 
 def getFunctionTypeById(ID):
     functionNames = list(map(lambda x: x.id , functions))
@@ -792,6 +865,36 @@ def getTypeById(ID):
         return functions[1].varTable[idx].type
     return False
 
+def getDirById(ID):
+    localVars = list(map(lambda x: x.id ,functions[scope].varTable))
+    globalVars = list(map(lambda x: x.id ,functions[1].varTable))
+    constVars = list(map(lambda x: x.id ,functions[0].varTable))
+    print(constVars)
+    if ID in localVars:
+        idx = localVars.index(ID)
+        return functions[scope].varTable[idx].dir
+    elif ID in globalVars:
+        idx = globalVars.index(ID)
+        return functions[1].varTable[idx].dir
+    elif ID in constVars:
+        idx = constVars.index(ID)
+        return functions[0].varTable[idx].dir
+    return False
+
+def resetVarCounters():
+    global localIntVars, localFloatVars, localCharVars, localBoolVars
+    global temporalIntVars, temporalFloatVars, temporalCharVars, temporalBoolVars
+
+    localIntVars = 0
+    localFloatVars = 0
+    localCharVars = 0
+    localBoolVars = 0
+
+    temporalIntVars = 0
+    temporalFloatVars = 0
+    temporalCharVars = 0
+    temporalBoolVars = 0
+
 #list of functions that holds Func objects
 functions = []
 # list of cuad commands
@@ -805,6 +908,26 @@ jumps = []
 operators = []
 operands = []
 types = []
+
+constIntVars = 0
+constFloatVars = 0
+constCharVars = 0
+constBoolVars = 0
+
+globalIntVars = 0
+globalFloatVars = 0
+globalCharVars = 0
+globalBoolVars = 0
+
+localIntVars = 0
+localFloatVars = 0
+localCharVars = 0
+localBoolVars = 0
+
+temporalIntVars = 0
+temporalFloatVars = 0
+temporalCharVars = 0
+temporalBoolVars = 0
 
 # Initialize the function list with the default functions
 functions.append(Func("const", "void", -1))
@@ -830,8 +953,9 @@ def printDirFunc():
 
     print (types)
 
-
-#maquina = maquinaVirtual(functions,cuads)
-#maquina.run("END")
-
 printDirFunc()
+
+mydirFunc = DirFunc()
+mydirFunc.functions = functions
+maquina = maquinaVirtual(mydirFunc,cuads)
+maquina.run(0,"END")
