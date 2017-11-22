@@ -180,7 +180,6 @@ class maquinaVirtual():
         while self.cuadruplos[self.cuadActual].accion != end:
             cuadruplo = self.cuadruplos[self.cuadActual]
             accion = cuadruplo.accion
-            print('do: ' + str(self.cuadruplos[self.cuadActual]))
             if accion == 'goto':
                 self.goto(cuadruplo)
             elif accion == 'gotoF':

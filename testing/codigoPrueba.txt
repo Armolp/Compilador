@@ -1,31 +1,20 @@
 int prueba;
-float x,y;
-
-func int func1 ( int i ) {
-	int j;
-	float f1;
-	bool b1;
-	char c;
-	f1 = i * prueba;
-	x = 0;
-}
-
-func int func2 ( int i ) {
-	int j;
-	float f1;
-	bool b1;
-	char c;
-	f1 = i + prueba;
-}
+float x,y,r;
 
 init{
 	print(x);
-	x = 0;
+	x = 250.0;
+	y = 0.0;
+	r = 4.0;
 }
 
 loop {
-	bool j;
-	j = true;
-	x = x+1;
-	drawLine(x+0,0,100,100);
+	drawCircle(x,x,50);
+	drawLine(y,y,y+10,y+10);
+	if(y > 400){
+	    y = y - 10;
+	}
+	else{
+	    y = y + 10;
+	}
 }
