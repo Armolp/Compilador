@@ -36,7 +36,9 @@ reserved = {
     'drawPoint' : 'POINTFUNC',
     'drawCircle' : 'CIRCLEFUNC',
     'drawRect' : 'RECTFUNC',
-    'drawLine' : 'LINEFUNC'
+    'drawLine' : 'LINEFUNC',
+
+    'print' : 'PRINTFUNC'
 }
 
 tokens += reserved.values()
@@ -120,7 +122,7 @@ def p_startQuad(p):
     jumps.append(len(cuads)-1)
 # funcion init y loop -----------------------------------------------
 def p_init(p):
-    "init : INIT addInit initQuad1 LPAR INT COMA INT RPAR bloque"
+    "init : INIT addInit initQuad1 bloque"
 
 def p_loop(p):
     "loop : LOOP addInit loopQuad1 bloque loopQuad2"
@@ -294,6 +296,7 @@ def p_invocacion(p):
 def p_reserved(p):
     """reserved : SINFUNC LPAR expresion RPAR sinQuad
                 | COSFUNC LPAR expresion RPAR cosQuad
+                | PRINTFUNC LPAR expresion RPAR printQuad
                 | POINTFUNC LPAR expresion COMA expresion RPAR pointQuad
                 | CIRCLEFUNC LPAR expresion COMA expresion COMA expresion RPAR circleQuad
                 | LINEFUNC LPAR expresion COMA expresion COMA expresion COMA expresion RPAR lineQuad
@@ -353,6 +356,12 @@ def p_cosQuad(p):
     cuads.append(cuadruplo(len(cuads), act, arg1, None, res))
     operands.append(res)
     tempNum += 1
+
+def p_printQuad(p):
+    "printQuad :"
+    act = "print"
+    arg1 = operands.pop()
+    cuads.append(cuadruplo(len(cuads), act, arg1, None, None))
 
 def p_pointQuad(p):
     "pointQuad :"
@@ -563,7 +572,14 @@ def p_opfactor(p):
 
 def p_pushID(p):
     "pushID :"
-    operands.append(p[-1])
+    localVars = list(map(lambda x: x.id ,functions[scope].varTable))
+    globalVars = list(map(lambda x: x.id ,functions[0].varTable))
+    if p[-1] in localVars or p[-1] in globalVars:
+        operands.append(p[-1])
+    else:
+        msg = "ERROR: "+p[-1]+" is not defined."
+        raise ValueError(msg)
+
 
 def p_pushConst(p):
     "pushConst :"
@@ -645,13 +661,14 @@ functions.append(Func("global", "void", -1))
 readFile("testing\codigoPrueba.txt")
 
 def printDirFunc():
+
+    print ("\nDirectorio de funciones:")
     for i in range(0,len(functions)):
-        print(functions[i].id + " " + str(functions[i].dir))
         print (str(functions[i]))
         for j in range(0, len(functions[i].varTable)):
-            print("\t" + functions[i].varTable[j].id + " " + str(functions[i].varTable[j].dir))
             print("\t" + str(functions[i].varTable[j]))
 
+    print ("\nQuadruplos:")
     for i in range(0, len(cuads)):
         print(str(cuads[i]))
 

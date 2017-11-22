@@ -1,11 +1,13 @@
-int prueba = 0 + (-1 - 2 * 3)/4 % 5;
+int prueba;
+float x,y,z;
 
 void mojoyd( int i , char c ) {
-	i = n * prueba;
+	n = i * prueba;
 }
 
-init(0 , 0){
-
+init{
+	x = sin2(0);
+	print(x);
 }
 
 loop {
