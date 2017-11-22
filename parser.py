@@ -341,7 +341,7 @@ def p_ifQuad3(p):
 
 # invocacion -------------------------------------
 def p_invocacion(p):
-    """invocacion : reserved
+    """invocacion : pushPar reserved popPar
                   | ID eraQuad LPAR pushPar invo1 RPAR popPar gosubQuad"""
     p[0] = p[1]
 
@@ -458,33 +458,33 @@ def p_circleQuad(p):
 
 def p_lineQuad(p):
     "lineQuad :"
-    act = "from"
-    arg2 = getDirById(operands.pop())   # y position
+    arg4 = getDirById(operands.pop())   # to y position
+    typ4 = types.pop()
+    arg3 = getDirById(operands.pop())   # to x position
+    typ3 = types.pop()
+    arg2 = getDirById(operands.pop())   # from y position
     typ2 = types.pop()
-    arg1 = getDirById(operands.pop())   # x position
+    arg1 = getDirById(operands.pop())   # from x position
     typ1 = types.pop()
+    act = "from"
     cuads.append(cuadruplo(len(cuads), act, arg1, arg2, None))
     act = "to"
-    arg2 = getDirById(operands.pop())   # y position
-    typ2 = types.pop()
-    arg1 = getDirById(operands.pop())   # x position
-    typ1 = types.pop()
-    cuads.append(cuadruplo(len(cuads), act, arg1, arg2, None))
+    cuads.append(cuadruplo(len(cuads), act, arg3, arg4, None))
 
 def p_rectQuad(p):
     "rectQuad :"
-    act = "rect1"
+    arg4 = getDirById(operands.pop())   # second y position
+    typ4 = types.pop()
+    arg3 = getDirById(operands.pop())   # second x position
+    typ3 = types.pop()
     arg2 = getDirById(operands.pop())   # y position
     typ2 = types.pop()
     arg1 = getDirById(operands.pop())   # x position
     typ1 = types.pop()
+    act = "rect1"
     cuads.append(cuadruplo(len(cuads), act, arg1, arg2, None))
     act = "rect2"
-    arg2 = getDirById(operands.pop())   # second y position
-    typ2 = types.pop()
-    arg1 = getDirById(operands.pop())   # second x position
-    typ1 = types.pop()
-    cuads.append(cuadruplo(len(cuads), act, arg1, arg2, None))
+    cuads.append(cuadruplo(len(cuads), act, arg3, arg4, None))
 
 # ciclo ------------------------------------------
 def p_ciclo(p):
