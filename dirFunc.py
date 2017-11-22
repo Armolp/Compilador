@@ -1,3 +1,9 @@
+#----------------------------------------------
+# DirFunc
+# una lista de funciones con su tipo, direccion y lsta de variables
+#----------------------------------------------
+
+
 class DirFunc:
     def __init__(self):
         self.functions = []

@@ -1,3 +1,10 @@
+#------------------------------------------------------------------------------
+# memoriaVirtual.py
+# es un objeto que maneja la memoria de la maquina virtual
+# cuenta con las funciones getValue(), setValue(), getType()
+#------------------------------------------------------------------------------
+
+
 from dirFunc import *
 from cuadruplo import *
 
@@ -61,8 +68,6 @@ class memoriaVirtual():
         if self.memTemporal.varChar:
             print('char:')
             print(self.memTemporal.varChar)
-
-
     def fixType(self,dir,value):
         if dir < 1000:
             return self.memConst.fixType(dir,value)
@@ -72,7 +77,6 @@ class memoriaVirtual():
             return self.memLocal.fixType(dir,value)
         elif dir < 10000:
             return self.memTemporal.fixType(dir,value)
-
     def getType(self,dir):
         if dir < 1000:
             return self.memConst.getType(dir)
@@ -82,7 +86,6 @@ class memoriaVirtual():
             return self.memLocal.getType(dir)
         elif dir < 10000:
             return self.memTemporal.getType(dir)
-
     def getValue(self,dir):
         if dir < 1000:
             return self.memConst.getValue(dir)
@@ -92,7 +95,6 @@ class memoriaVirtual():
             return self.memLocal.getValue(dir)
         elif dir < 10000:
             return self.memTemporal.getValue(dir)
-
     def setValue(self,value,dir):
         if dir < 1000:
             self.memConst.setValue(value,dir)
@@ -102,7 +104,6 @@ class memoriaVirtual():
             self.memLocal.setValue(value,dir)
         elif dir < 10000:
             self.memTemporal.setValue(value,dir)
-
     def setFunctionValues(self,func):
         if func.id != 'const':
             for i in range(0, len(func.varTable)):
@@ -110,7 +111,6 @@ class memoriaVirtual():
         else:
             for i in range(0, len(func.varTable)):
                 self.setValue(func.varTable[i].id, func.varTable[i].dir)
-
 
 class memoriaFuncion():
     def __init__(self,startInt,startFloat,startBool,startChar):
@@ -132,7 +132,6 @@ class memoriaFuncion():
             return value
         else:
             return str(value)
-
     def getType(self,dir):
         if dir < self.startFloat:
             return 'int'
@@ -142,7 +141,6 @@ class memoriaFuncion():
             return 'bool'
         else:
             return 'char'
-
     def getValue(self,dir):
         if dir < self.startFloat:
             return self.varInt[dir-self.startInt]
@@ -152,8 +150,6 @@ class memoriaFuncion():
             return self.varBool[dir-self.startBool]
         else:
             return self.varChar[dir-self.startChar]
-
-
     def setValue(self,value,dir):
         if dir < self.startFloat:
             if len(self.varInt) > dir-self.startInt:

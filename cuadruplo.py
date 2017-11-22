@@ -1,3 +1,14 @@
+#------------------------------------------------------------------------------
+# cuadruplo.py
+# un objeto que guarda 5 valores
+# 1- el indice del cuadruplo
+# 2- la accion del cuadruplo
+# 3- primer argumento
+# 4- segundo argumento
+# 5- tercer argumento
+#------------------------------------------------------------------------------
+
+
 class cuadruplo:
     def __init__(self, dir, accion, arg1, arg2, arg3):
         self.dir = dir

@@ -1,10 +1,19 @@
+
+#------------------------------------------------------------------------------
+# maquinaVirtual.py
+# es una maquina virtual que recibe como parametros el directorio de funciones
+# y los cuadruplos que arroja el compilador
+#
+# la funcion self.run(start,end) ejecuta los cuadruplos que se recibieron
+#------------------------------------------------------------------------------
+
+
 from Compilador.cuadruplo import *
 from Compilador.dirFunc import *
 from Compilador.memoriaVirtual import *
 from tkinter import *
 from math import sin, cos
 import time
-
 
 class parametros():
     def __init__(self,value,type):

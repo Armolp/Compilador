@@ -1,7 +1,8 @@
 #----------------------------------------------
-# Regina Gallardo A00815711
-# Arturo Moran A00
 # cubo semantico
+# clase que guarda las reglas de operaciones
+# recibe 3 parametros
+# tipo 1, tipo 2, y la operacion
 #----------------------------------------------
 
 from enum import Enum
