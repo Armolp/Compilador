@@ -1,19 +1,16 @@
-int prueba;
-float x,y,r;
+
+func void foo(int x, int y, int r){
+	int rr;
+	rr = r/2;
+	if(r > 4){
+		drawCircle(x,y,r);
+	}
+}
 
 init{
-	x = 250.0;
-	y = 0.0;
-	r = 4.0;
+
 }
 
 loop {
-	drawCircle(x,x,50);
-	drawLine(y,y,y+10,y+10);
-	if(y > 400){
-	    y = y - 10;
-	}
-	else{
-	    y = y + 10;
-	}
+	foo(250,150,64);
 }
