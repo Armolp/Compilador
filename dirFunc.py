@@ -9,6 +9,7 @@ class Func:
         self.id = id
         self.type = type
         self.dir = dir
+        self.globDir = None
         self.varTable = []
 
     def __str__(self):

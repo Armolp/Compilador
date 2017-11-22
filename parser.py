@@ -212,6 +212,10 @@ def p_func3(p):
 def p_addFunc(p):
     "addFunc : empty"
     functions.append(Func(p[-1], p[-2], len(cuads)))
+    newDir = getDir(p[-2])
+    functions[1].varTable.append(Var( p[-1], p[-2], newDir))
+    functions[len(functions)-1].globDir = newDir
+
     global scope
     scope = len(functions) -1
 
@@ -371,7 +375,7 @@ def p_eraQuad(p):
     funcs = list(map(lambda x: x.id ,functions))
     if ID in funcs:
         act = "era"
-        arg1 = p[-1]
+        arg1 = getFunctionById(p[-1]).globDir
         cuads.append(cuadruplo(len(cuads), act, arg1, None, None))
         global paramNum
         paramNum = 1
@@ -393,7 +397,7 @@ def p_paramQuad(p):
 def p_gosubQuad(p):
     "gosubQuad :"
     act = "gosub"
-    arg1 = getFunctionDirById(p[-7])
+    arg1 = getFunctionById(p[-7]).globDir
     cuads.append(cuadruplo(len(cuads), act, arg1, None, None))
     global paramNum
     paramNum = 1
@@ -860,6 +864,12 @@ def getFunctionDirById(ID):
     if idx >= 0:
         return functions[idx].dir
 
+def getFunctionById(ID):
+    functionNames = list(map(lambda x: x.id , functions))
+    idx = functionNames.index(ID)
+    if idx >= 0:
+        return functions[idx]
+
 def getTypeById(ID):
     localVars = list(map(lambda x: x.id ,functions[scope].varTable))
     globalVars = list(map(lambda x: x.id ,functions[1].varTable))
@@ -964,4 +974,4 @@ printDirFunc()
 mydirFunc = DirFunc()
 mydirFunc.functions = functions
 maquina = maquinaVirtual(mydirFunc,cuads)
-maquina.run(0,"END")
+#maquina.run(0,"END")
