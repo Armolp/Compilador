@@ -964,4 +964,4 @@ printDirFunc()
 mydirFunc = DirFunc()
 mydirFunc.functions = functions
 maquina = maquinaVirtual(mydirFunc,cuads)
-#maquina.run(0,"END")
+maquina.run(0,"END")

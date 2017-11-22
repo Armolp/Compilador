@@ -178,6 +178,7 @@ class maquinaVirtual():
         self.cuadActual = begin
         while self.cuadruplos[self.cuadActual].accion != end:
             cuadruplo = self.cuadruplos[self.cuadActual]
+            print(cuadruplo)
             accion = cuadruplo.accion
             if accion == 'goto':
                 self.goto(cuadruplo)
@@ -214,7 +215,7 @@ class maquinaVirtual():
                 cuad2 = self.cuadruplos[self.cuadActual]
                 self.draw2(cuadruplo,cuad2,memoria)
             elif accion == 'update':
-                time.sleep(0.01)
+                time.sleep(0.05)
                 self.tk.update()
             elif accion =='delete':
                 self.c.delete(ALL)
@@ -223,6 +224,7 @@ class maquinaVirtual():
                 print(cuadruplo)
 
             self.cuadActual = self.cuadActual + 1
+        memoria.printMemoria()
         self.memVirtual.memConst = memoria.memConst
         self.memVirtual.memGlobal = memoria.memGlobal
 
