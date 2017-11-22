@@ -397,7 +397,7 @@ def p_paramQuad(p):
 def p_gosubQuad(p):
     "gosubQuad :"
     act = "gosub"
-    arg1 = getFunctionById(p[-7]).globDir
+    arg1 = getFunctionById(p[-7]).dir
     cuads.append(cuadruplo(len(cuads), act, arg1, None, None))
     global paramNum
     paramNum = 1
