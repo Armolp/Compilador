@@ -776,9 +776,9 @@ def p_funcQuad(p):
         if(resType == "void"):
             msg = "ERROR: "+ID+" Function has no return value."
             raise ValueError(msg)
-        cuads.append(cuadruplo(len(cuads), act, arg1, None, res))
         newDir = getTemporalDir(resType)
         functions[scope].varTable.append(Var( res, resType, newDir))
+        cuads.append(cuadruplo(len(cuads), act, arg1, None, newDir))
         operands.append(res)
         types.append(resType)
         tempNum += 1
