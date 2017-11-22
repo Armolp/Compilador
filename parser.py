@@ -501,6 +501,7 @@ def p_whileQuad2(p):
     "whileQuad2 :"
     act = "gotoF"
     arg1 = getDirById(operands.pop())
+    typ1 = types.pop()
     jumps.append(len(cuads))
     cuads.append(cuadruplo(len(cuads),act, arg1, None, None))
 def p_whileQuad3(p):
