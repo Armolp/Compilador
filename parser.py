@@ -768,7 +768,6 @@ def p_funcQuad(p):
         arg1 = ID
         res = "t" + str(tempNum)
         resType = getFunctionTypeById(ID)
-        print(ID,resType)
         if(resType == "void"):
             msg = "ERROR: "+ID+" Function has no return value."
             raise ValueError(msg)
@@ -835,16 +834,16 @@ def getTemporalDir(varType):
     newDir = 0
     global temporalIntVars,temporalFloatVars,temporalBoolVars,temporalCharVars
     if(varType == 'int'):
-        newDir = 5000 + temporalIntVars
+        newDir = 6000 + temporalIntVars
         temporalIntVars += 1
     elif(varType == 'float'):
-        newDir = 6000 + temporalFloatVars
+        newDir = 7000 + temporalFloatVars
         temporalFloatVars += 1
     elif(varType == 'bool'):
-        newDir = 7000 + temporalBoolVars
+        newDir = 8000 + temporalBoolVars
         temporalBoolVars += 1
     elif(varType == 'char'):
-        newDir = 8000 + temporalCharVars
+        newDir = 9000 + temporalCharVars
         temporalCharVars += 1
     return newDir
 
@@ -869,7 +868,6 @@ def getDirById(ID):
     localVars = list(map(lambda x: x.id ,functions[scope].varTable))
     globalVars = list(map(lambda x: x.id ,functions[1].varTable))
     constVars = list(map(lambda x: x.id ,functions[0].varTable))
-    print(constVars)
     if ID in localVars:
         idx = localVars.index(ID)
         return functions[scope].varTable[idx].dir
