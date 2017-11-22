@@ -1,3 +1,14 @@
+#------------------------------------------------------------------------------
+# parser.py
+# Este es un lexer, parser y analizador semantico para el lenguaje que
+# desarrollamos en la clase de compiladores para noveno semestre de ITC
+#
+# Este programa cuenta con una funcion "readFile" que lee un archivo y lo
+# parsea segun nuestro lenguaje de programacion.
+#
+# Lo que Genera este programa es el directorio de funciones y la lista de
+# cuadruplos que van a ser utilizados por la maquina virtual.
+#------------------------------------------------------------------------------
 import ply.lex as lex
 import ply.yacc as yacc
 from dirFunc import *
@@ -803,6 +814,7 @@ def readFile(file):
     file_in.close()
     parser.parse(data)
 
+# returns the direction for the given var type
 def getDir(varType):
     global scope
     if(scope == 1):
@@ -835,6 +847,7 @@ def getDir(varType):
             localCharVars += 1
     return newDir
 
+# returns the next temporal direction for the given type
 def getTemporalDir(varType):
     newDir = 0
     global temporalIntVars,temporalFloatVars,temporalBoolVars,temporalCharVars
@@ -852,24 +865,28 @@ def getTemporalDir(varType):
         temporalCharVars += 1
     return newDir
 
+# returns the function type with the given id
 def getFunctionTypeById(ID):
     functionNames = list(map(lambda x: x.id , functions))
     idx = functionNames.index(ID)
     if idx >= 0:
         return functions[idx].type
 
+# returns the function Quad direction with the given id
 def getFunctionDirById(ID):
     functionNames = list(map(lambda x: x.id , functions))
     idx = functionNames.index(ID)
     if idx >= 0:
         return functions[idx].dir
 
+# returns the function with the given id
 def getFunctionById(ID):
     functionNames = list(map(lambda x: x.id , functions))
     idx = functionNames.index(ID)
     if idx >= 0:
         return functions[idx]
 
+# returns the var type with a given id
 def getTypeById(ID):
     localVars = list(map(lambda x: x.id ,functions[scope].varTable))
     globalVars = list(map(lambda x: x.id ,functions[1].varTable))
@@ -881,6 +898,7 @@ def getTypeById(ID):
         return functions[1].varTable[idx].type
     return False
 
+# returns the var direction with a given id
 def getDirById(ID):
     localVars = list(map(lambda x: x.id ,functions[scope].varTable))
     globalVars = list(map(lambda x: x.id ,functions[1].varTable))
@@ -896,6 +914,7 @@ def getDirById(ID):
         return functions[0].varTable[idx].dir
     return False
 
+# resets the counters for local and temporal vars
 def resetVarCounters():
     global localIntVars, localFloatVars, localCharVars, localBoolVars
     global temporalIntVars, temporalFloatVars, temporalCharVars, temporalBoolVars
