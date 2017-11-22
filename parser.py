@@ -821,13 +821,13 @@ def getDir(varType):
             newDir = 2000 + localIntVars
             localIntVars += 1
         elif(varType == 'float'):
-            newDir = 2200 + localFloatVars
+            newDir = 3000 + localFloatVars
             localFloatVars += 1
         elif(varType == 'bool'):
-            newDir = 2400 + localBoolVars
+            newDir = 4000 + localBoolVars
             localBoolVars += 1
         elif(varType == 'char'):
-            newDir = 2600 + localCharVars
+            newDir = 5000 + localCharVars
             localCharVars += 1
     return newDir
 
