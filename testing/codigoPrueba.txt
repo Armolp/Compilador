@@ -1,9 +1,12 @@
 
 func void foo(int x, int y, int r){
 	int rr;
+	print(x);
 	rr = r/2;
 	if(r > 4){
 		drawCircle(x,y,r);
+		foo(x-r, y, rr);
+		foo(x+r, y, rr);
 	}
 }
 
@@ -13,5 +16,5 @@ init{
 
 
 loop {
-	foo(250,150,64);
+	foo(250,250,64);
 }
