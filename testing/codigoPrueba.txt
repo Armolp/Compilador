@@ -2,7 +2,6 @@ int prueba;
 float x,y,r;
 
 init{
-	print(x);
 	x = 250.0;
 	y = 0.0;
 	r = 4.0;
