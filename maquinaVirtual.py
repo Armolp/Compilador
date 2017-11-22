@@ -173,8 +173,7 @@ class maquinaVirtual():
 
     def run(self,begin,end):
         memoria = memoriaVirtual()
-        memoria.memGlobal = self.memVirtual.memGlobal
-        memoria.memConst = self.memVirtual.memConst
+        memoria = self.memVirtual
         self.vaciarParametros(memoria)
         self.cuadActual = begin
         while self.cuadruplos[self.cuadActual].accion != end:
