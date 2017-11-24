@@ -817,6 +817,7 @@ def readFile(file):
 # returns the direction for the given var type
 def getDir(varType):
     global scope
+    newDir = 0
     if(scope == 1):
         global globalIntVars,globalFloatVars,globalBoolVars,globalCharVars
         if(varType == 'int'):
@@ -973,7 +974,10 @@ functions.append(Func("global", "void", -1))
 # functions[1].varTable.append(Var("j", "int", -1))
 # functions[1].varTable.append(Var("k", "int", -1))
 
-readFile("testing\codigoPrueba.txt")
+#readFile("testing\codigoPrueba.txt")
+#readFile("testing\\recursionCirc.txt")
+#readFile("testing\\gusano.txt")
+readFile("testing\\todo.txt")
 
 def printDirFunc():
 

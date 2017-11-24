@@ -1,0 +1,23 @@
+float aa;
+func void rama(int x, int y, int l, float a){
+    if(l > 5){
+
+        int x2, y2;
+
+        x2 = x + l*sin(a);
+        y2 = y + l*cos(a);
+
+        drawLine(x,y,x2,y2);
+        rama(x2, y2, l/2, a+aa);
+        rama(x2, y2, l/2, a-aa);
+        }
+}
+
+init{
+    aa = 0.3;
+}
+
+loop{
+    aa = aa + 0.01;
+    rama(250,400,200,3.14);
+}

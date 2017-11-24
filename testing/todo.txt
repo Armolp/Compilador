@@ -1,0 +1,35 @@
+float a;
+int mods;
+func float toRad(int v, int total) {
+    return v * (1.0/total) * (3.1416*2);
+}
+
+init{
+    a = 0;
+    mods = 1;
+}
+
+loop{
+    int x,y,x2,y2;
+    x = 200 * sin(2*a) + 250;
+    y = 200 * cos(1*a) + 250;
+    drawCircle(x,y,20);
+
+    int i;
+    i = 0;
+    while(i<100) {
+        float a2;
+        int i2;
+        a2 = toRad(i, 100);
+        i2 = (i+mods)%100;
+        x = 200 * sin(a2) + 250;
+        y = 200 * cos(a2) + 250;
+        a2 = toRad(i2, 100);
+        x2 = 200 * sin(a2) + 250;
+        y2 = 200 * cos(a2) + 250;
+        drawLine(x,y,x2,y2);
+        i = i + 1;
+    }
+    mods = mods+1;
+    a = a + 0.1;
+}
