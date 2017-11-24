@@ -1,12 +1,33 @@
 float a;
 int mods;
+float offset;
 func float toRad(int v, int total) {
     return v * (1.0/total) * (3.1416*2);
+}
+
+func void rects(int x1, int y1, int x2, int y2, bool side){
+    int w,h;
+    w = (x2-x1);
+    h = (y2-y1);
+    drawRect(x1,y1,x2,y2);
+    if(w > 10){
+        w = w + offset;
+        h = h + offset;
+        if(side == true){
+            rects(x1+(w/4), y1+(h/4)-h, x2-(w/4), y2-(h/4)-h, false);
+            rects(x1+(w/4), y1+(h/4)+h, x2-(w/4), y2-(h/4)+h, false);
+        }
+        else {
+            rects(x1+(w/4)+w, y1+(h/4), x2-(w/4)+w, y2-(h/4), true);
+            rects(x1+(w/4)-w, y1+(h/4), x2-(w/4)-w, y2-(h/4), true);
+        }
+    }
 }
 
 init{
     a = 0;
     mods = 1;
+    offset = 0;
 }
 
 loop{
@@ -14,22 +35,25 @@ loop{
     x = 200 * sin(2*a) + 250;
     y = 200 * cos(1*a) + 250;
     drawCircle(x,y,20);
+    a = a + 0.1;
 
     int i;
     i = 0;
-    while(i<100) {
+    while(i<50) {
         float a2;
         int i2;
-        a2 = toRad(i, 100);
+        a2 = toRad(i, 50);
         i2 = (i+mods)%100;
         x = 200 * sin(a2) + 250;
         y = 200 * cos(a2) + 250;
-        a2 = toRad(i2, 100);
+        a2 = toRad(i2, 50);
         x2 = 200 * sin(a2) + 250;
         y2 = 200 * cos(a2) + 250;
         drawLine(x,y,x2,y2);
         i = i + 1;
     }
     mods = mods+1;
-    a = a + 0.1;
+
+    rects(200,200,300,300,true);
+    offset = 10 * sin(a) + 10.0;
 }
